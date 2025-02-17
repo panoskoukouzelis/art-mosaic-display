@@ -36,6 +36,126 @@
           "description": "Η κεντρική φιγούρα"
         }
       ]
+    },
+    {
+      "id": 3,
+      "title": "Ο Κήπος",
+      "artist": "Claude Monet",
+      "year": 1900,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928621-7a13d66a62b1",
+      "hotspots": [
+        {
+          "id": "hs4",
+          "x": 30,
+          "y": 50,
+          "description": "Νούφαρα"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Αυτοπροσωπογραφία",
+      "artist": "Rembrandt",
+      "year": 1669,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928622-7a13d66a62b2",
+      "hotspots": [
+        {
+          "id": "hs5",
+          "x": 50,
+          "y": 30,
+          "description": "Το βλέμμα"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Οι Δεσποινίδες της Αβινιόν",
+      "artist": "Pablo Picasso",
+      "year": 1907,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928623-7a13d66a62b3",
+      "hotspots": [
+        {
+          "id": "hs6",
+          "x": 40,
+          "y": 40,
+          "description": "Κυβιστική φόρμα"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Η Εμμονή της Μνήμης",
+      "artist": "Salvador Dalí",
+      "year": 1931,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928624-7a13d66a62b4",
+      "hotspots": [
+        {
+          "id": "hs7",
+          "x": 60,
+          "y": 50,
+          "description": "Λιωμένο ρολόι"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Η Γκουέρνικα",
+      "artist": "Pablo Picasso",
+      "year": 1937,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928625-7a13d66a62b5",
+      "hotspots": [
+        {
+          "id": "hs8",
+          "x": 45,
+          "y": 45,
+          "description": "Το άλογο"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Η Νύχτα",
+      "artist": "Edward Hopper",
+      "year": 1942,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928626-7a13d66a62b6",
+      "hotspots": [
+        {
+          "id": "hs9",
+          "x": 35,
+          "y": 55,
+          "description": "Το καφέ"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Οι Ηλίανθοι",
+      "artist": "Vincent van Gogh",
+      "year": 1888,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928627-7a13d66a62b7",
+      "hotspots": [
+        {
+          "id": "hs10",
+          "x": 50,
+          "y": 40,
+          "description": "Τα λουλούδια"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Το Φιλί",
+      "artist": "Gustav Klimt",
+      "year": 1908,
+      "imageUrl": "https://images.unsplash.com/photo-1579783928628-7a13d66a62b8",
+      "hotspots": [
+        {
+          "id": "hs11",
+          "x": 50,
+          "y": 45,
+          "description": "Το ζευγάρι"
+        }
+      ]
     }
   ]
 }
