@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Hotspot from './Hotspot';
 
@@ -30,31 +31,33 @@ const ArtworkCard = ({ artwork }: Props) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative group rounded-lg overflow-hidden bg-white"
+      className="relative group rounded-lg overflow-hidden bg-card"
     >
-      <div className="relative aspect-[3/4]">
-        <div className={`absolute inset-0 bg-gray-100 transition-opacity duration-500 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`} />
-        <img
-          src={artwork.imageUrl}
-          alt={artwork.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          onLoad={() => setImageLoaded(true)}
-          onMouseEnter={() => setShowHotspots(true)}
-          onMouseLeave={() => setShowHotspots(false)}
-        />
-        {showHotspots && artwork.hotspots.map((hotspot) => (
-          <Hotspot
-            key={hotspot.id}
-            x={hotspot.x}
-            y={hotspot.y}
-            description={hotspot.description}
+      <Link to={`/artwork/${artwork.id}`}>
+        <div className="relative aspect-[3/4]">
+          <div className={`absolute inset-0 bg-muted transition-opacity duration-500 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`} />
+          <img
+            src={artwork.imageUrl}
+            alt={artwork.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onLoad={() => setImageLoaded(true)}
+            onMouseEnter={() => setShowHotspots(true)}
+            onMouseLeave={() => setShowHotspots(false)}
           />
-        ))}
-      </div>
-      <div className="p-4 bg-white/90 backdrop-blur-sm">
-        <h3 className="text-lg font-medium text-gray-900">{artwork.title}</h3>
-        <p className="text-sm text-gray-600">{artwork.artist}, {artwork.year}</p>
-      </div>
+          {showHotspots && artwork.hotspots.map((hotspot) => (
+            <Hotspot
+              key={hotspot.id}
+              x={hotspot.x}
+              y={hotspot.y}
+              description={hotspot.description}
+            />
+          ))}
+        </div>
+        <div className="p-4 bg-card/90 backdrop-blur-sm">
+          <h3 className="text-lg font-medium text-card-foreground">{artwork.title}</h3>
+          <p className="text-sm text-muted-foreground">{artwork.artist}, {artwork.year}</p>
+        </div>
+      </Link>
     </motion.div>
   );
 };
