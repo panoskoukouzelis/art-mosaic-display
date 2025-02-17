@@ -25,7 +25,7 @@ const ArtworkView = () => {
     return <div>Artwork not found</div>;
   }
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const elem = e.currentTarget;
     const rect = elem.getBoundingClientRect();
     
@@ -35,14 +35,6 @@ const ArtworkView = () => {
     setMagnifierPosition({ x, y });
   };
 
-  const isHotspotArea = (x: number, y: number) => {
-    return artwork.hotspots.some(hotspot => {
-      const dx = hotspot.x - x;
-      const dy = hotspot.y - y;
-      return Math.sqrt(dx * dx + dy * dy) < 5;
-    });
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <ModeToggle />
@@ -50,15 +42,16 @@ const ArtworkView = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="relative w-full max-w-6xl mx-auto aspect-[4/3] bg-accent rounded-lg overflow-hidden">
           <div
-            className="relative w-full h-full"
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setShowMagnifier(true)}
-            onMouseLeave={() => setShowMagnifier(false)}
+            className="relative w-full h-full touch-none"
+            onPointerMove={handlePointerMove}
+            onPointerEnter={() => setShowMagnifier(true)}
+            onPointerLeave={() => setShowMagnifier(false)}
           >
             <img
               src={artwork.imageUrl}
               alt={artwork.title}
               className="w-full h-full object-cover"
+              draggable={false}
             />
             
             {showMagnifier && !isOverHotspot && (
@@ -80,6 +73,7 @@ const ArtworkView = () => {
                     src={artwork.imageUrl}
                     alt=""
                     className="w-full h-full object-cover"
+                    draggable={false}
                   />
                 </div>
               </div>
@@ -93,11 +87,11 @@ const ArtworkView = () => {
                   "hover:scale-110 transition-transform"
                 )}
                 style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
-                onMouseEnter={() => {
+                onPointerEnter={() => {
                   setIsOverHotspot(true);
                   setActiveHotspot(hotspot.id);
                 }}
-                onMouseLeave={() => {
+                onPointerLeave={() => {
                   setIsOverHotspot(false);
                   setActiveHotspot(null);
                 }}
