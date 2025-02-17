@@ -1,0 +1,41 @@
+
+{
+  "artworks": [
+    {
+      "id": 1,
+      "title": "Η Έναστρη Νύχτα",
+      "artist": "Vincent van Gogh",
+      "year": 1889,
+      "imageUrl": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119",
+      "hotspots": [
+        {
+          "id": "hs1",
+          "x": 45,
+          "y": 30,
+          "description": "Στροβιλιζόμενος ουρανός"
+        },
+        {
+          "id": "hs2",
+          "x": 20,
+          "y": 70,
+          "description": "Το κυπαρίσσι"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Η Κραυγή",
+      "artist": "Edvard Munch",
+      "year": 1893,
+      "imageUrl": "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5",
+      "hotspots": [
+        {
+          "id": "hs3",
+          "x": 50,
+          "y": 40,
+          "description": "Η κεντρική φιγούρα"
+        }
+      ]
+    }
+  ]
+}
