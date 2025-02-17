@@ -45,7 +45,10 @@ const ArtworkView = () => {
             className="relative w-full h-full touch-none"
             onPointerMove={handlePointerMove}
             onPointerEnter={() => setShowMagnifier(true)}
-            onPointerLeave={() => setShowMagnifier(false)}
+            onPointerLeave={() => {
+              setShowMagnifier(false);
+              setIsOverHotspot(false);
+            }}
           >
             <img
               src={artwork.imageUrl}
@@ -92,10 +95,14 @@ const ArtworkView = () => {
                   setActiveHotspot(hotspot.id);
                 }}
                 onPointerLeave={() => {
-                  setIsOverHotspot(false);
-                  setActiveHotspot(null);
+                  if (!activeHotspot) {
+                    setIsOverHotspot(false);
+                  }
                 }}
-                onClick={() => setActiveHotspot(hotspot.id)}
+                onClick={() => {
+                  setIsOverHotspot(true);
+                  setActiveHotspot(hotspot.id);
+                }}
               >
                 <Hand className="w-6 h-6 text-white drop-shadow-lg" />
               </button>
@@ -103,8 +110,24 @@ const ArtworkView = () => {
           </div>
         </div>
 
-        <Sheet open={!!activeHotspot} onOpenChange={() => setActiveHotspot(null)}>
-          <SheetContent side="left">
+        <Sheet 
+          open={!!activeHotspot} 
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setActiveHotspot(null);
+              setIsOverHotspot(false);
+            }
+          }}
+        >
+          <SheetContent 
+            side="left" 
+            onPointerEnter={() => setIsOverHotspot(true)}
+            onPointerLeave={() => {
+              if (!activeHotspot) {
+                setIsOverHotspot(false);
+              }
+            }}
+          >
             <SheetHeader>
               <SheetTitle>Λεπτομέρεια</SheetTitle>
               <SheetDescription>
