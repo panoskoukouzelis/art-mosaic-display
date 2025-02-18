@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hand } from 'lucide-react';
@@ -36,7 +37,7 @@ const ArtworkView = () => {
     setMagnifierPosition({ x, y });
   };
 
-  const DetailsSidebar = () => (
+  const SidebarContent = () => (
     <div className="h-full overflow-y-auto">
       <SheetHeader>
         <SheetTitle>Λεπτομέρεια</SheetTitle>
@@ -144,13 +145,18 @@ const ArtworkView = () => {
                   }
                 }}
               >
-                <DetailsSidebar />
+                <SidebarContent />
               </SheetContent>
             </Sheet>
           ) : (
             activeHotspot && (
               <div className="w-80 h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
-                <DetailsSidebar />
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Λεπτομέρεια</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {artwork.hotspots.find(h => h.id === activeHotspot)?.description}
+                  </p>
+                </div>
               </div>
             )
           )}
