@@ -45,22 +45,14 @@
   backface-visibility: hidden;
   display: flex;
   touch-action: pan-y;
-  margin-left: -1rem;
+  transform-style: preserve-3d;
 }
 
 .embla__slide {
-  flex: 0 0 70%;
+  flex: 0 0 100%;
   min-width: 0;
   position: relative;
-  margin-left: 1rem;
-}
-
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-.rotate-y-\[-20deg\] {
-  transform: rotateY(-20deg);
+  transform-style: preserve-3d;
 }
 
 @keyframes ping {

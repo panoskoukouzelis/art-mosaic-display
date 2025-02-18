@@ -27,30 +27,66 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   }, [onInteraction]);
 
   return (
-    <div className="fixed inset-0 bg-black z-50 overflow-hidden">
-      <div className="embla h-full w-full" ref={emblaRef}>
+    <div className="fixed inset-0 bg-neutral-900 z-50 overflow-hidden">
+      <div 
+        className="embla h-full w-full" 
+        ref={emblaRef}
+        style={{
+          perspective: '1000px',
+          transform: 'translateY(-5%) rotateX(10deg)'
+        }}
+      >
         <div className="embla__container h-full flex items-center">
           {artworksData.artworks.map((artwork, index) => (
             <div
               key={artwork.id}
-              className={cn(
-                "embla__slide relative flex-[0_0_70%] min-w-0 h-[80vh] mx-4",
-                "transform perspective-1000 rotate-y-[-20deg] scale-90",
-                "transition-transform duration-500"
-              )}
+              className="embla__slide relative min-w-0 h-[80vh]"
               style={{
-                transform: `perspective(1000px) rotateY(-20deg) scale(0.9)`,
+                transform: `rotateY(45deg) translateZ(-200px)`,
+                transformStyle: 'preserve-3d',
+                margin: '0 -100px'
               }}
             >
-              <img
-                src={artwork.imageUrl}
-                alt={artwork.title}
-                className="w-full h-full object-cover rounded-xl"
-                draggable={false}
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white rounded-b-xl">
-                <h2 className="text-2xl font-semibold">{artwork.title}</h2>
-                <p className="text-sm opacity-80">{artwork.artist}</p>
+              <div 
+                className="relative w-full h-full"
+                style={{
+                  transform: 'rotateY(-45deg)',
+                  transformStyle: 'preserve-3d'
+                }}
+              >
+                <img
+                  src={artwork.imageUrl}
+                  alt={artwork.title}
+                  className="w-full h-full object-cover"
+                  style={{
+                    boxShadow: '0 0 100px rgba(0,0,0,0.5)',
+                  }}
+                  draggable={false}
+                />
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.8))',
+                    transform: 'translateZ(1px)'
+                  }}
+                />
+                <div 
+                  className="absolute bottom-0 left-0 right-0 p-6 text-white"
+                  style={{
+                    transform: 'translateZ(2px)'
+                  }}
+                >
+                  <h2 className="text-2xl font-semibold mb-2">{artwork.title}</h2>
+                  <p className="text-sm opacity-80">{artwork.artist}</p>
+                </div>
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    transform: 'translateZ(-1000px) scale(2)',
+                    background: 'linear-gradient(45deg, #000 0%, #111 100%)',
+                    filter: 'blur(2px)'
+                  }}
+                />
               </div>
             </div>
           ))}
