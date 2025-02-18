@@ -37,6 +37,32 @@
   }
 }
 
+.embla {
+  overflow: hidden;
+}
+
+.embla__container {
+  backface-visibility: hidden;
+  display: flex;
+  touch-action: pan-y;
+  margin-left: -1rem;
+}
+
+.embla__slide {
+  flex: 0 0 70%;
+  min-width: 0;
+  position: relative;
+  margin-left: 1rem;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-y-\[-20deg\] {
+  transform: rotateY(-20deg);
+}
+
 @keyframes ping {
   75%, 100% {
     transform: scale(2);
@@ -57,4 +83,3 @@
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-
