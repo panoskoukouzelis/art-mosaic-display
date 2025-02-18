@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hand } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Sheet,
   SheetContent,
@@ -21,7 +20,7 @@ const ArtworkView = () => {
   const [showMagnifier, setShowMagnifier] = useState(false);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   const [isOverHotspot, setIsOverHotspot] = useState(false);
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   if (!artwork) {
     return <div>Artwork not found</div>;
