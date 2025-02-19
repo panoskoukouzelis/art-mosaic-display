@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Hotspot from './Hotspot';
 
@@ -33,18 +32,22 @@ const ArtworkCard = ({ artwork, onClick, selected }: Props) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative group rounded-lg overflow-hidden bg-card"
+      className="relative group cursor-pointer rounded-lg overflow-hidden"
       onClick={onClick}
+      onMouseEnter={() => setShowHotspots(true)}
+      onMouseLeave={() => setShowHotspots(false)}
     >
-      <div className="relative aspect-[3/4]">
-        <div className={`absolute inset-0 bg-muted transition-opacity duration-500 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`} />
+      <div className="relative">
+        <div 
+          className={`absolute inset-0 bg-muted transition-opacity duration-500 ${
+            imageLoaded ? 'opacity-0' : 'opacity-100'
+          }`} 
+        />
         <img
           src={artwork.imageUrl}
           alt={artwork.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
           onLoad={() => setImageLoaded(true)}
-          onMouseEnter={() => setShowHotspots(true)}
-          onMouseLeave={() => setShowHotspots(false)}
         />
         {showHotspots && artwork.hotspots.map((hotspot) => (
           <Hotspot
@@ -54,10 +57,12 @@ const ArtworkCard = ({ artwork, onClick, selected }: Props) => {
             description={hotspot.description}
           />
         ))}
-      </div>
-      <div className="p-4 bg-card/90 backdrop-blur-sm">
-        <h3 className="text-lg font-medium text-card-foreground">{artwork.title}</h3>
-        <p className="text-sm text-muted-foreground">{artwork.artist}, {artwork.year}</p>
+        <div 
+          className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent translate-y-full opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+        >
+          <h3 className="text-lg font-medium text-white mb-1">{artwork.title}</h3>
+          <p className="text-sm text-white/80">{artwork.artist}, {artwork.year}</p>
+        </div>
       </div>
     </motion.div>
   );

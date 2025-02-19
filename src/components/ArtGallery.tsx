@@ -23,14 +23,27 @@ const ArtGallery = () => {
     navigate(`/artwork/${id}`);
   };
 
+  // Υπολογισμός διαφορετικών μεγεθών για τις εικόνες
+  const artworksWithSizes = artworksData.artworks.map((artwork, index) => {
+    const sizes = ['aspect-square', 'aspect-[3/4]', 'aspect-[4/5]', 'aspect-[2/3]'];
+    const sizeIndex = index % sizes.length;
+    return {
+      ...artwork,
+      aspectClass: sizes[sizeIndex]
+    };
+  });
+
   return (
     <Masonry
       breakpointCols={breakpointColumns}
       className="flex w-auto -ml-4 md:-ml-6 lg:-ml-8"
       columnClassName="pl-4 md:pl-6 lg:pl-8 bg-clip-padding"
     >
-      {artworksData.artworks.map((artwork) => (
-        <div key={artwork.id} className="mb-4 md:mb-6 lg:mb-8">
+      {artworksWithSizes.map((artwork) => (
+        <div 
+          key={artwork.id} 
+          className={`mb-4 md:mb-6 lg:mb-8 ${artwork.aspectClass}`}
+        >
           <ArtworkCard
             artwork={artwork}
             onClick={() => handleArtworkClick(artwork.id)}
