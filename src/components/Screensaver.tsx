@@ -8,6 +8,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   const [emblaRef] = useEmblaCarousel({
     loop: true,
     dragFree: true,
+    startIndex: 1
   });
 
   useEffect(() => {
@@ -31,12 +32,15 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
       <div 
         className="embla h-full w-full" 
         ref={emblaRef}
-        style={{
-          perspective: '1000px',
-          transform: 'translateY(-5%) rotateX(10deg)'
-        }}
       >
-        <div className="embla__container h-full flex items-center">
+        <div 
+          className="embla__container h-full flex items-center"
+          style={{
+            perspective: '1000px',
+            transform: 'translateY(-5%) rotateX(10deg)',
+            transformStyle: 'preserve-3d'
+          }}
+        >
           {artworksData.artworks.map((artwork, index) => (
             <div
               key={artwork.id}
