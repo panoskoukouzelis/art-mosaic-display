@@ -14,6 +14,9 @@ import {
 import { ModeToggle } from '@/components/mode-toggle';
 import artworksData from '../data/artworks.json';
 
+const ZOOM_LEVEL = 3;
+const MAGNIFIER_SIZE = 160; // 160px = 32px * 5 (w-32 h-32 in Tailwind)
+
 const ArtworkView = () => {
   const { id } = useParams();
   const artwork = artworksData.artworks.find(a => a.id === Number(id));
@@ -31,10 +34,18 @@ const ArtworkView = () => {
     const elem = e.currentTarget;
     const rect = elem.getBoundingClientRect();
     
+    // Calculate relative mouse position as percentage
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     
-    setMagnifierPosition({ x, y });
+    // Calculate actual pixel positions for the magnified image
+    const imgX = ((e.clientX - rect.left) / rect.width) * 100 * ZOOM_LEVEL;
+    const imgY = ((e.clientY - rect.top) / rect.height) * 100 * ZOOM_LEVEL;
+    
+    setMagnifierPosition({ 
+      x: Math.min(Math.max(x, MAGNIFIER_SIZE/2/rect.width*100), 100 - MAGNIFIER_SIZE/2/rect.width*100),
+      y: Math.min(Math.max(y, MAGNIFIER_SIZE/2/rect.height*100), 100 - MAGNIFIER_SIZE/2/rect.height*100)
+    });
   };
 
   const SidebarContent = () => (
@@ -74,17 +85,22 @@ const ArtworkView = () => {
                 
                 {showMagnifier && !isOverHotspot && (
                   <div
-                    className="absolute w-32 h-32 pointer-events-none border-2 border-white/50 rounded-full overflow-hidden"
+                    className="absolute w-40 h-40 pointer-events-none border-2 border-white/50 rounded-full overflow-hidden"
                     style={{
-                      left: `calc(${magnifierPosition.x}% - 64px)`,
-                      top: `calc(${magnifierPosition.y}% - 64px)`,
+                      left: `calc(${magnifierPosition.x}% - ${MAGNIFIER_SIZE/2}px)`,
+                      top: `calc(${magnifierPosition.y}% - ${MAGNIFIER_SIZE/2}px)`,
+                      boxShadow: '0 0 0 4px rgba(0,0,0,0.2)',
+                      transform: 'scale(1)',
+                      transition: 'transform 0.1s ease-out',
                     }}
                   >
                     <div
-                      className="absolute w-[400%] h-[400%]"
+                      className="absolute"
                       style={{
-                        left: `${-magnifierPosition.x * 4 + 200}%`,
-                        top: `${-magnifierPosition.y * 4 + 200}%`,
+                        width: `${ZOOM_LEVEL * 100}%`,
+                        height: `${ZOOM_LEVEL * 100}%`,
+                        left: `${-magnifierPosition.x * ZOOM_LEVEL + 50}%`,
+                        top: `${-magnifierPosition.y * ZOOM_LEVEL + 50}%`,
                       }}
                     >
                       <img
