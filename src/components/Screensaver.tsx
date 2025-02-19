@@ -1,15 +1,34 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import artworksData from '../data/artworks.json';
 import { cn } from '@/lib/utils';
 
+const AUTOPLAY_INTERVAL = 3000;
+
 const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
-  const [emblaRef] = useEmblaCarousel({
+  const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     dragFree: true,
     startIndex: 1
   });
+
+  const autoplay = useCallback(() => {
+    if (!emblaApi) return;
+    
+    const autoplayTimer = setInterval(() => {
+      emblaApi.scrollNext();
+    }, AUTOPLAY_INTERVAL);
+
+    return () => clearInterval(autoplayTimer);
+  }, [emblaApi]);
+
+  useEffect(() => {
+    const cleanup = autoplay();
+    return () => {
+      if (cleanup) cleanup();
+    };
+  }, [autoplay]);
 
   useEffect(() => {
     const handleInteraction = () => {
@@ -41,7 +60,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
             transformStyle: 'preserve-3d'
           }}
         >
-          {artworksData.artworks.map((artwork, index) => (
+          {artworksData.artworks.map((artwork) => (
             <div
               key={artwork.id}
               className="embla__slide relative min-w-0 h-[80vh]"
