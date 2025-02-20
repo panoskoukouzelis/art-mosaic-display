@@ -1,60 +1,78 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import ArtworkCard from './ArtworkCard';
 
-const API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_all_hotspots/?page=1';
+interface APIResponse {
+  data: Array<{
+    post_id: number;
+    title: string;
+    feature_image: string;
+    content: string;
+    hotspots: Array<{
+      id: string;
+      x: number;
+      y: number;
+      description: string;
+    }>;
+  }>;
+  current_page: number;
+  total_pages: number;
+}
+
+const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_all_hotspots';
 
 const ArtGallery = () => {
   const navigate = useNavigate();
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedArtwork, setSelectedArtwork] = useState<number | null>(null);
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 9;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchArtworks = async (page: number) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_API_URL}/?page=${page}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error! Status: ${response.status}`);
+      }
+
+      const data: APIResponse = await response.json();
+      console.log('API Response:', data);
+
+      if (data && Array.isArray(data.data)) {
+        const artworksFormatted = data.data.map((item) => ({
+          id: item.post_id,
+          title: item.title,
+          imageUrl: item.feature_image,
+          description: item.content,
+          hotspots: item.hotspots,
+          height: Math.floor(Math.random() * (500 - 300 + 1)) + 300
+        }));
+
+        setArtworks(artworksFormatted);
+        setCurrentPage(data.current_page);
+        setTotalPages(data.total_pages);
+      }
+    } catch (error) {
+      console.error('Error fetching artworks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchArtworks = async () => {
-      try {
-        const response = await fetch(API_URL, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP Error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('API Response:', data);
-
-        if (data && Array.isArray(data.data)) {
-          const artworksFormatted = data.data.map((item) => ({
-            id: item.post_id,
-            title: item.title,
-            imageUrl: item.feature_image,
-            description: item.content,
-            hotspots: item.hotspots,
-            // Random height between 300 and 500px
-            height: Math.floor(Math.random() * (500 - 300 + 1)) + 300
-          }));
-
-          setArtworks(artworksFormatted);
-        } else {
-          throw new Error('Invalid API response format');
-        }
-      } catch (error) {
-        console.error('Error fetching artworks:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArtworks();
+    fetchArtworks(1);
   }, []);
 
   const handleArtworkClick = (id: number) => {
@@ -62,12 +80,11 @@ const ArtGallery = () => {
     navigate(`/artwork/${id}`);
   };
 
-  const loadMore = () => {
-    setPage((prev) => prev + 1);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      fetchArtworks(currentPage + 1);
+    }
   };
-
-  const displayedArtworks = artworks.slice(0, page * itemsPerPage);
-  const canLoadMore = displayedArtworks.length < artworks.length;
 
   if (loading) {
     return (
@@ -83,7 +100,7 @@ const ArtGallery = () => {
     );
   }
 
-  if (!loading && displayedArtworks.length === 0) {
+  if (!loading && artworks.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         Δεν βρέθηκαν έργα τέχνης.
@@ -94,7 +111,7 @@ const ArtGallery = () => {
   return (
     <div className="space-y-8">
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-        {displayedArtworks.map((artwork) => (
+        {artworks.map((artwork) => (
           <div
             key={artwork.id}
             className="break-inside-avoid mb-4"
@@ -109,30 +126,20 @@ const ArtGallery = () => {
         ))}
       </div>
 
-      {canLoadMore && (
+      {currentPage < totalPages && (
         <div className="flex justify-center mt-12">
-          <button
-            onClick={loadMore}
-            className="group relative px-8 py-3 rounded-full overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 transform hover:scale-105"
+          <Button
+            onClick={handleNextPage}
+            className="group relative overflow-hidden"
+            size="lg"
+            variant="default"
           >
-            <div className="absolute inset-0 w-3/12 bg-white/20 skew-x-[45deg] group-hover:w-full transition-all duration-500 -translate-x-full group-hover:translate-x-full"></div>
             <span className="relative flex items-center gap-2">
-              Φόρτωση περισσότερων
-              <svg
-                className="w-5 h-5 animate-bounce"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
+              Επόμενη σελίδα
+              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </span>
-          </button>
+            <div className="absolute inset-0 w-3/12 bg-white/20 skew-x-[45deg] group-hover:w-full transition-all duration-500 -translate-x-full group-hover:translate-x-full" />
+          </Button>
         </div>
       )}
     </div>
