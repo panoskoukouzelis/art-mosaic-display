@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
@@ -128,7 +127,6 @@ const ArtGallery = () => {
                 id: artwork.post_id,
                 title: artwork.title,
                 imageUrl: artwork.feature_image,
-                description: artwork.content,
                 hotspots: artwork.hotspots.map(h => ({
                   id: h._id,
                   x: h.bwdihp_hotspot_left_position?.size || 0,
