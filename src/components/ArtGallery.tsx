@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
@@ -65,7 +66,8 @@ const ArtGallery = () => {
       console.log('API Response:', data);
 
       if (data && Array.isArray(data.data)) {
-        setArtworks(data.data);
+        // Διατήρηση των προηγούμενων έργων και προσθήκη των νέων
+        setArtworks(prevArtworks => [...prevArtworks, ...data.data]);
         setCurrentPage(data.current_page);
         setTotalPages(data.total_pages);
       }
@@ -91,7 +93,7 @@ const ArtGallery = () => {
     }
   };
 
-  if (loading) {
+  if (loading && artworks.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
         <div className="animate-pulse flex space-x-4">
@@ -143,18 +145,22 @@ const ArtGallery = () => {
 
       {currentPage < totalPages && (
         <div className="flex justify-center mt-12">
-          <Button
-            onClick={handleNextPage}
-            className="group relative overflow-hidden"
-            size="lg"
-            variant="default"
-          >
-            <span className="relative flex items-center gap-2">
-              Επόμενη σελίδα
-              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </span>
-            <div className="absolute inset-0 w-3/12 bg-white/20 skew-x-[45deg] group-hover:w-full transition-all duration-500 -translate-x-full group-hover:translate-x-full" />
-          </Button>
+          {loading ? (
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          ) : (
+            <Button
+              onClick={handleNextPage}
+              className="group relative overflow-hidden"
+              size="lg"
+              variant="default"
+            >
+              <span className="relative flex items-center gap-2">
+                Επόμενη σελίδα
+                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+              <div className="absolute inset-0 w-3/12 bg-white/20 skew-x-[45deg] group-hover:w-full transition-all duration-500 -translate-x-full group-hover:translate-x-full" />
+            </Button>
+          )}
         </div>
       )}
     </div>
