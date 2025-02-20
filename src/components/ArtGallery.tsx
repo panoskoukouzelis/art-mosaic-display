@@ -5,28 +5,43 @@ import { Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ArtworkCard from './ArtworkCard';
 
+interface Hotspot {
+  _id: string;
+  bwdihp_hotspot_title: string;
+  bwdihp_tooltip_btn: string;
+  bwdihp_tooltip_content?: string;
+  bwdihp_hotspot_left_position?: {
+    unit: string;
+    size: number;
+    sizes: any[];
+  };
+  bwdihp_hotspot_top_position?: {
+    unit: string;
+    size: number;
+    sizes: any[];
+  };
+}
+
+interface ArtworkData {
+  post_id: number;
+  title: string;
+  content: string;
+  hotspots: Hotspot[];
+  feature_image: string;
+}
+
 interface APIResponse {
-  data: Array<{
-    post_id: number;
-    title: string;
-    feature_image: string;
-    content: string;
-    hotspots: Array<{
-      id: string;
-      x: number;
-      y: number;
-      description: string;
-    }>;
-  }>;
   current_page: number;
   total_pages: number;
+  per_page: number;
+  data: ArtworkData[];
 }
 
 const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_all_hotspots';
 
 const ArtGallery = () => {
   const navigate = useNavigate();
-  const [artworks, setArtworks] = useState([]);
+  const [artworks, setArtworks] = useState<ArtworkData[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedArtwork, setSelectedArtwork] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,16 +66,7 @@ const ArtGallery = () => {
       console.log('API Response:', data);
 
       if (data && Array.isArray(data.data)) {
-        const artworksFormatted = data.data.map((item) => ({
-          id: item.post_id,
-          title: item.title,
-          imageUrl: item.feature_image,
-          description: item.content,
-          hotspots: item.hotspots,
-          height: Math.floor(Math.random() * (500 - 300 + 1)) + 300
-        }));
-
-        setArtworks(artworksFormatted);
+        setArtworks(data.data);
         setCurrentPage(data.current_page);
         setTotalPages(data.total_pages);
       }
@@ -113,14 +119,25 @@ const ArtGallery = () => {
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
         {artworks.map((artwork) => (
           <div
-            key={artwork.id}
+            key={artwork.post_id}
             className="break-inside-avoid mb-4"
-            style={{ height: `${artwork.height}px` }}
+            style={{ height: `${Math.floor(Math.random() * (500 - 300 + 1)) + 300}px` }}
           >
             <ArtworkCard
-              artwork={artwork}
-              onClick={() => handleArtworkClick(artwork.id)}
-              selected={selectedArtwork === artwork.id}
+              artwork={{
+                id: artwork.post_id,
+                title: artwork.title,
+                imageUrl: artwork.feature_image,
+                description: artwork.content,
+                hotspots: artwork.hotspots.map(h => ({
+                  id: h._id,
+                  x: h.bwdihp_hotspot_left_position?.size || 0,
+                  y: h.bwdihp_hotspot_top_position?.size || 0,
+                  description: h.bwdihp_tooltip_content || ''
+                }))
+              }}
+              onClick={() => handleArtworkClick(artwork.post_id)}
+              selected={selectedArtwork === artwork.post_id}
             />
           </div>
         ))}
