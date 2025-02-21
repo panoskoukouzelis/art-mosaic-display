@@ -65,9 +65,9 @@ const ArtGallery = () => {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['artworks', currentPage],
     queryFn: () => fetchArtworksPage(currentPage),
-    keepPreviousData: true,
     staleTime: 5 * 60 * 1000, // Cache για 5 λεπτά
-    cacheTime: 30 * 60 * 1000, // Διατήρηση στη cache για 30 λεπτά
+    gcTime: 30 * 60 * 1000, // Διατήρηση στη cache για 30 λεπτά (αντικατέστησε το cacheTime)
+    placeholderData: (previousData) => previousData, // Αντικατέστησε το keepPreviousData
     onSuccess: (newData) => {
       if (newData && Array.isArray(newData.data)) {
         setAllArtworks(prev => [...prev, ...newData.data]);
