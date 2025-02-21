@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -60,21 +59,14 @@ const ArtGallery = () => {
   const navigate = useNavigate();
   const [selectedArtwork, setSelectedArtwork] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [allArtworks, setAllArtworks] = useState<ArtworkData[]>([]);
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['artworks', currentPage],
     queryFn: () => fetchArtworksPage(currentPage),
-    staleTime: 5 * 60 * 1000, // Cache για 5 λεπτά
-    gcTime: 30 * 60 * 1000, // Διατήρηση στη cache για 30 λεπτά
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     placeholderData: (previousData) => previousData
   });
-
-  useEffect(() => {
-    if (data && Array.isArray(data.data)) {
-      setAllArtworks(prev => [...prev, ...data.data]);
-    }
-  }, [data]);
 
   const handleArtworkClick = (id: number) => {
     setSelectedArtwork(id);
@@ -87,7 +79,7 @@ const ArtGallery = () => {
     }
   };
 
-  if (isLoading && allArtworks.length === 0) {
+  if (isLoading && !data) {
     return (
       <div className="flex justify-center items-center py-12">
         <div className="animate-pulse flex space-x-4">
@@ -101,7 +93,7 @@ const ArtGallery = () => {
     );
   }
 
-  if (!isLoading && allArtworks.length === 0) {
+  if (!data?.data || data.data.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         Δεν βρέθηκαν έργα τέχνης.
@@ -112,7 +104,7 @@ const ArtGallery = () => {
   return (
     <div className="space-y-8">
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-        {allArtworks.map((artwork) => (
+        {data.data.map((artwork) => (
           <div
             key={artwork.post_id}
             className="break-inside-avoid mb-4"
