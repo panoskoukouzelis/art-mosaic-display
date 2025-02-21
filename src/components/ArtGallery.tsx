@@ -1,8 +1,9 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
 import ArtworkCard from './ArtworkCard';
 
 interface Hotspot {
@@ -39,48 +40,40 @@ interface APIResponse {
 
 const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_all_hotspots';
 
+const fetchArtworksPage = async (page: number): Promise<APIResponse> => {
+  const response = await fetch(`${BASE_API_URL}/?page=${page}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP Error! Status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 const ArtGallery = () => {
   const navigate = useNavigate();
-  const [artworks, setArtworks] = useState<ArtworkData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedArtwork, setSelectedArtwork] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [allArtworks, setAllArtworks] = useState<ArtworkData[]>([]);
 
-  const fetchArtworks = async (page: number) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${BASE_API_URL}/?page=${page}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error! Status: ${response.status}`);
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ['artworks', currentPage],
+    queryFn: () => fetchArtworksPage(currentPage),
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000, // Cache για 5 λεπτά
+    cacheTime: 30 * 60 * 1000, // Διατήρηση στη cache για 30 λεπτά
+    onSuccess: (newData) => {
+      if (newData && Array.isArray(newData.data)) {
+        setAllArtworks(prev => [...prev, ...newData.data]);
       }
-
-      const data: APIResponse = await response.json();
-      console.log('API Response:', data);
-
-      if (data && Array.isArray(data.data)) {
-        // Διατήρηση των προηγούμενων έργων και προσθήκη των νέων
-        setArtworks(prevArtworks => [...prevArtworks, ...data.data]);
-        setCurrentPage(data.current_page);
-        setTotalPages(data.total_pages);
-      }
-    } catch (error) {
-      console.error('Error fetching artworks:', error);
-    } finally {
-      setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchArtworks(1);
-  }, []);
+  });
 
   const handleArtworkClick = (id: number) => {
     setSelectedArtwork(id);
@@ -88,12 +81,12 @@ const ArtGallery = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      fetchArtworks(currentPage + 1);
+    if (data && currentPage < data.total_pages) {
+      setCurrentPage(prev => prev + 1);
     }
   };
 
-  if (loading && artworks.length === 0) {
+  if (isLoading && allArtworks.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
         <div className="animate-pulse flex space-x-4">
@@ -107,7 +100,7 @@ const ArtGallery = () => {
     );
   }
 
-  if (!loading && artworks.length === 0) {
+  if (!isLoading && allArtworks.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         Δεν βρέθηκαν έργα τέχνης.
@@ -118,7 +111,7 @@ const ArtGallery = () => {
   return (
     <div className="space-y-8">
       <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-        {artworks.map((artwork) => (
+        {allArtworks.map((artwork) => (
           <div
             key={artwork.post_id}
             className="break-inside-avoid mb-4"
@@ -143,9 +136,9 @@ const ArtGallery = () => {
         ))}
       </div>
 
-      {currentPage < totalPages && (
+      {data && currentPage < data.total_pages && (
         <div className="flex justify-center mt-12">
-          {loading ? (
+          {isFetching ? (
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           ) : (
             <Button
