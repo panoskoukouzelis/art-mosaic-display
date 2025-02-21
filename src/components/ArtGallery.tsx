@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -66,14 +66,15 @@ const ArtGallery = () => {
     queryKey: ['artworks', currentPage],
     queryFn: () => fetchArtworksPage(currentPage),
     staleTime: 5 * 60 * 1000, // Cache για 5 λεπτά
-    gcTime: 30 * 60 * 1000, // Διατήρηση στη cache για 30 λεπτά (αντικατέστησε το cacheTime)
-    placeholderData: (previousData) => previousData, // Αντικατέστησε το keepPreviousData
-    onSuccess: (newData) => {
-      if (newData && Array.isArray(newData.data)) {
-        setAllArtworks(prev => [...prev, ...newData.data]);
-      }
-    }
+    gcTime: 30 * 60 * 1000, // Διατήρηση στη cache για 30 λεπτά
+    placeholderData: (previousData) => previousData
   });
+
+  useEffect(() => {
+    if (data && Array.isArray(data.data)) {
+      setAllArtworks(prev => [...prev, ...data.data]);
+    }
+  }, [data]);
 
   const handleArtworkClick = (id: number) => {
     setSelectedArtwork(id);
