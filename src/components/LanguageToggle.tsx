@@ -19,13 +19,13 @@ export function LanguageToggle() {
       onClick={toggleLanguage}
       className="relative w-[5rem] gap-2"
     >
-      <span className={`mr-4 transition-opacity ${isEnglish ? 'opacity-100' : 'opacity-40'}`}>EN</span>
+      <span className={`transition-opacity ${isEnglish ? 'opacity-100' : 'opacity-40'}`}>EN</span>
       {isEnglish ? (
         <ToggleRight className="absolute right-2 h-4 w-4 text-primary transition-all" />
       ) : (
         <ToggleLeft className="absolute right-2 h-4 w-4 text-primary transition-all" />
       )}
-      <span className={`transition-opacity ${!isEnglish ? 'opacity-100' : 'opacity-40'}`}>ΕΛ</span>
+      <span className={`mr-4 transition-opacity ${!isEnglish ? 'opacity-100' : 'opacity-40'}`}>ΕΛ</span>
     </Button>
   );
 }
