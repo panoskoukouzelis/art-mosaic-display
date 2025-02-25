@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hand } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -12,35 +11,79 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { ModeToggle } from '@/components/mode-toggle';
-import artworksData from '../data/artworks.json';
+import { Loader2 } from 'lucide-react';
 
 const ZOOM_LEVEL = 3;
-const MAGNIFIER_SIZE = 160; // 160px = 32px * 5 (w-32 h-32 in Tailwind)
+const MAGNIFIER_SIZE = 160;
+const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_hotspot';
+
+const fetchArtworkById = async (id: number) => {
+  const response = await fetch(`${BASE_API_URL}/${id}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP Error! Status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+const stripHtml = (html: string) => html.replace(/<[^>]*>?/gm, "");
+
+const isYouTubeLink = (url: string) => {
+  const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  return ytRegex.test(url);
+};
+
+const getYouTubeEmbedUrl = (url: string) => {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? `https://www.youtube.com/embed/${match[1]}` : "";
+};
 
 const ArtworkView = () => {
   const { id } = useParams();
-  const artwork = artworksData.artworks.find(a => a.id === Number(id));
+  const [artwork, setArtwork] = useState<any>(null);
   const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
   const [showMagnifier, setShowMagnifier] = useState(false);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   const [isOverHotspot, setIsOverHotspot] = useState(false);
   const isMobile = useIsMobile();
 
+  useEffect(() => {
+    const fetchArtwork = async () => {
+      if (id) {
+        try {
+          const data = await fetchArtworkById(Number(id));
+          console.log("Fetched Artwork Data:", data);
+          setArtwork(data);
+        } catch (error) {
+          console.error('Artwork not found:', error);
+        }
+      }
+    };
+
+    fetchArtwork();
+  }, [id]);
+
   if (!artwork) {
-    return <div>Artwork not found</div>;
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const elem = e.currentTarget;
     const rect = elem.getBoundingClientRect();
     
-    // Calculate relative mouse position as percentage
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
-    // Calculate actual pixel positions for the magnified image
-    const imgX = ((e.clientX - rect.left) / rect.width) * 100 * ZOOM_LEVEL;
-    const imgY = ((e.clientY - rect.top) / rect.height) * 100 * ZOOM_LEVEL;
     
     setMagnifierPosition({ 
       x: Math.min(Math.max(x, MAGNIFIER_SIZE/2/rect.width*100), 100 - MAGNIFIER_SIZE/2/rect.width*100),
@@ -53,7 +96,21 @@ const ArtworkView = () => {
       <SheetHeader>
         <SheetTitle>Λεπτομέρεια</SheetTitle>
         <SheetDescription>
-          {artwork.hotspots.find(h => h.id === activeHotspot)?.description}
+          {stripHtml(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "")}
+          
+          {/* Αν υπάρχει σύνδεσμος, εμφάνιση του */}
+          {artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link?.url && (
+            <div className="mt-4">
+              <a
+                href={artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link.url}
+                target={artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link.is_external ? "_blank" : "_self"}
+                rel={artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link.nofollow ? "nofollow" : ""}
+                className="text-blue-500 underline"
+              >
+                {artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_btn}
+              </a>
+            </div>
+          )}
         </SheetDescription>
       </SheetHeader>
     </div>
@@ -77,7 +134,7 @@ const ArtworkView = () => {
                 }}
               >
                 <img
-                  src={artwork.imageUrl}
+                  src={artwork.feature_image}
                   alt={artwork.title}
                   className="w-full h-full object-cover"
                   draggable={false}
@@ -89,9 +146,6 @@ const ArtworkView = () => {
                     style={{
                       left: `calc(${magnifierPosition.x}% - ${MAGNIFIER_SIZE/2}px)`,
                       top: `calc(${magnifierPosition.y}% - ${MAGNIFIER_SIZE/2}px)`,
-                      boxShadow: '0 0 0 4px rgba(0,0,0,0.2)',
-                      transform: 'scale(1)',
-                      transition: 'transform 0.1s ease-out',
                     }}
                   >
                     <div
@@ -104,7 +158,7 @@ const ArtworkView = () => {
                       }}
                     >
                       <img
-                        src={artwork.imageUrl}
+                        src={artwork.feature_image}
                         alt=""
                         className="w-full h-full object-cover"
                         draggable={false}
@@ -115,15 +169,15 @@ const ArtworkView = () => {
 
                 {artwork.hotspots.map((hotspot) => (
                   <button
-                    key={hotspot.id}
+                    key={hotspot._id}
                     className={cn(
                       "absolute -ml-4 -mt-4 w-8 h-8 flex items-center justify-center",
                       "hover:scale-110 transition-transform"
                     )}
-                    style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
+                    style={{ left: `${hotspot.bwdihp_hotspot_left_position.size}%`, top: `${hotspot.bwdihp_hotspot_top_position.size}%` }}
                     onPointerEnter={() => {
                       setIsOverHotspot(true);
-                      setActiveHotspot(hotspot.id);
+                      setActiveHotspot(hotspot._id);
                     }}
                     onPointerLeave={() => {
                       if (!activeHotspot) {
@@ -132,7 +186,7 @@ const ArtworkView = () => {
                     }}
                     onClick={() => {
                       setIsOverHotspot(true);
-                      setActiveHotspot(hotspot.id);
+                      setActiveHotspot(hotspot._id);
                     }}
                   >
                     <Hand className="w-6 h-6 text-white drop-shadow-lg" />
@@ -143,24 +197,8 @@ const ArtworkView = () => {
           </div>
 
           {isMobile ? (
-            <Sheet 
-              open={!!activeHotspot} 
-              onOpenChange={(isOpen) => {
-                if (!isOpen) {
-                  setActiveHotspot(null);
-                  setIsOverHotspot(false);
-                }
-              }}
-            >
-              <SheetContent 
-                side="left" 
-                onPointerEnter={() => setIsOverHotspot(true)}
-                onPointerLeave={() => {
-                  if (!activeHotspot) {
-                    setIsOverHotspot(false);
-                  }
-                }}
-              >
+            <Sheet open={!!activeHotspot} onOpenChange={(isOpen) => { if (!isOpen) setActiveHotspot(null); }}>
+              <SheetContent side="left">
                 <SidebarContent />
               </SheetContent>
             </Sheet>
@@ -169,9 +207,22 @@ const ArtworkView = () => {
               <div className="w-80 h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Λεπτομέρεια</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {artwork.hotspots.find(h => h.id === activeHotspot)?.description}
-                  </p>
+                  {isYouTubeLink(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "") ? (
+                    <div className="aspect-video rounded-lg overflow-hidden border">
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        src={getYouTubeEmbedUrl(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "")}
+                        frameBorder="0"
+                        allowFullScreen
+                        className="rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {stripHtml(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "")}
+                    </p>
+                  )}
                 </div>
               </div>
             )
