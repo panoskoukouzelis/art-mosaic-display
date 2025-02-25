@@ -1,0 +1,13 @@
+
+{
+  "gallery": {
+    "title": "Art Collection",
+    "subtitle": "Discover masterpieces of art",
+    "noArtworks": "No artworks found.",
+    "nextPage": "Next page"
+  },
+  "artwork": {
+    "detail": "Detail",
+    "open": "Open"
+  }
+}

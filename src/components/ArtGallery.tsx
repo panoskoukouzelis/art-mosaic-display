@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import ArtworkCard from './ArtworkCard';
 
 const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_all_hotspots';
@@ -25,7 +26,8 @@ const fetchArtworksPage = async (page) => {
 
 const ArtGallery = () => {
   const navigate = useNavigate();
-  const [selectedArtwork, setSelectedArtwork] = useState(null);
+  const { t } = useTranslation();
+  const [selectedArtwork, setSelectedArtwork] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [artworks, setArtworks] = useState([]);
 
@@ -48,14 +50,14 @@ const ArtGallery = () => {
     }
   }, [data]);
 
-  const handleArtworkClick = (id) => {
+  const handleArtworkClick = (id: number) => {
     setSelectedArtwork(id);
     navigate(`/artwork/${id}`);
   };
 
   const handleNextPage = () => {
     if (data && currentPage < data.total_pages) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(prev => prev + 1);
     }
   };
 
@@ -67,8 +69,12 @@ const ArtGallery = () => {
     );
   }
 
-  if (!artworks.length) {
-    return <div className="text-center py-12 text-muted-foreground">Δεν βρέθηκαν έργα τέχνης.</div>;
+  if (!data?.data || data.data.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        {t('gallery.noArtworks')}
+      </div>
+    );
   }
 
   return (
@@ -92,9 +98,14 @@ const ArtGallery = () => {
           {isFetching ? (
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           ) : (
-            <Button onClick={handleNextPage} className="group relative overflow-hidden" size="lg">
+            <Button
+              onClick={handleNextPage}
+              className="group relative overflow-hidden"
+              size="lg"
+              variant="default"
+            >
               <span className="relative flex items-center gap-2">
-                Επόμενη σελίδα
+                {t('gallery.nextPage')}
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
               <div className="absolute inset-0 w-3/12 bg-white/20 skew-x-[45deg] group-hover:w-full transition-all duration-500 -translate-x-full group-hover:translate-x-full" />

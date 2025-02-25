@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -10,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ArtworkView from "./pages/ArtworkView";
 import Screensaver from "./components/Screensaver";
+import "./i18n/config";
 
 const queryClient = new QueryClient();
 
