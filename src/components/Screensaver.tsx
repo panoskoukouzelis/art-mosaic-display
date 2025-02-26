@@ -11,7 +11,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
     dragFree: true,
     startIndex: 1,
     slidesToScroll: 3,
-    align: 'start',
+    align: 'center',
     containScroll: 'trimSnaps'
   });
 
@@ -68,12 +68,12 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
           {groupedArtworks.map((group, groupIndex) => (
             <div
               key={groupIndex}
-              className="embla__slide relative min-w-full h-full grid grid-rows-3 gap-4 p-4"
+              className="embla__slide relative min-w-fit h-full flex items-center gap-4 p-4"
             >
               {group.map((artwork) => (
                 <div 
                   key={artwork.id}
-                  className="relative h-full border-2 border-white/20 rounded-lg overflow-hidden"
+                  className="relative w-[400px] h-[600px] border-2 border-white/20 rounded-lg overflow-hidden"
                 >
                   <img
                     src={artwork.imageUrl}
