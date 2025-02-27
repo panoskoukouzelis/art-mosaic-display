@@ -1,42 +1,43 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import artworksData from '../data/artworks.json';
+import axios from 'axios';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper as SwiperCore } from 'swiper';
+import { EffectCoverflow } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
 
-const AUTOPLAY_INTERVAL = 3000;
+SwiperCore.use([EffectCoverflow]);
+
+const AUTOPLAY_INTERVAL = 3000; // 3 δευτερόλεπτα
 
 const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    dragFree: true,
-    startIndex: 1,
-    slidesToScroll: 3,
-    align: 'center',
-    containScroll: 'trimSnaps'
-  });
+  const [images, setImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    axios.get('https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots/?page=1')
+      .then(response => {
+        const fetchedImages = response.data.data.map((item: any) => item.thumbnail);
+        setImages(fetchedImages);
+        console.log(fetchedImages); // Εκτυπώστε τα δεδομένα για έλεγχο
+      })
+      .catch(error => console.error('Error fetching images:', error));
+  }, []);
 
   const autoplay = useCallback(() => {
-    if (!emblaApi) return;
-    
     const autoplayTimer = setInterval(() => {
-      emblaApi.scrollNext();
+      // Placeholder if you want to trigger some autoplay action
     }, AUTOPLAY_INTERVAL);
 
     return () => clearInterval(autoplayTimer);
-  }, [emblaApi]);
+  }, []);
 
   useEffect(() => {
     const cleanup = autoplay();
-    return () => {
-      if (cleanup) cleanup();
-    };
+    return () => cleanup && cleanup();
   }, [autoplay]);
 
   useEffect(() => {
-    const handleInteraction = () => {
-      onInteraction();
-    };
-
+    const handleInteraction = () => onInteraction();
     window.addEventListener('mousemove', handleInteraction);
     window.addEventListener('touchstart', handleInteraction);
     window.addEventListener('keydown', handleInteraction);
@@ -48,49 +49,30 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
     };
   }, [onInteraction]);
 
-  // Ομαδοποίηση των έργων τέχνης σε τριάδες
-  const groupedArtworks = artworksData.artworks.reduce((groups, artwork, index) => {
-    const groupIndex = Math.floor(index / 3);
-    if (!groups[groupIndex]) {
-      groups[groupIndex] = [];
-    }
-    groups[groupIndex].push(artwork);
-    return groups;
-  }, [] as typeof artworksData.artworks[]);
-
   return (
-    <div className="fixed inset-0 bg-neutral-900 z-50">
-      <div 
-        className="embla h-full w-full" 
-        ref={emblaRef}
+    <div className="fixed inset-0 bg-neutral-900 z-50 flex items-center justify-center">
+      <Swiper
+        effect="coverflow"
+        grabCursor={true}
+        centeredSlides={true}
+        loop={true}
+        slidesPerView={3} // Εμφάνιση 3 slides κάθε φορά
+        slidesPerGroup={1} // Μετακίνηση κατά 1 slide κάθε φορά
+        autoplay={{
+          delay: AUTOPLAY_INTERVAL,
+          disableOnInteraction: false,
+        }}
+        modules={[EffectCoverflow]}
+        className="w-full max-w-4xl"
       >
-        <div className="embla__container h-full flex items-center">
-          {groupedArtworks.map((group, groupIndex) => (
-            <div
-              key={groupIndex}
-              className="embla__slide relative min-w-fit h-full flex items-center gap-4 p-4"
-            >
-              {group.map((artwork) => (
-                <div 
-                  key={artwork.id}
-                  className="relative w-[400px] h-[600px] border-2 border-white/20 rounded-lg overflow-hidden"
-                >
-                  <img
-                    src={artwork.imageUrl}
-                    alt={artwork.title}
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                    <h2 className="text-xl font-semibold text-white mb-1">{artwork.title}</h2>
-                    <p className="text-sm text-white/80">{artwork.artist}</p>
-                  </div>
-                </div>
-              ))}
+        {images.map((src, index) => (
+          <SwiperSlide key={index} className="relative">
+            <div className="carousel-item" style={{ '--index': index } as React.CSSProperties}>
+              <img src={src} alt={`Slide ${index}`} className="w-full h-auto rounded-lg shadow-xl" draggable={false} />
             </div>
-          ))}
-        </div>
-      </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 };
