@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, ChevronRight } from 'lucide-react';
@@ -6,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import ArtworkCard from './ArtworkCard';
 
-const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_all_hotspots';
+const BASE_API_URL = 'https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots';
 
 const fetchArtworksPage = async (page) => {
   const response = await fetch(`${BASE_API_URL}/?page=${page}`, {

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hand } from 'lucide-react';
@@ -15,7 +16,7 @@ import { Loader2 } from 'lucide-react';
 
 const ZOOM_LEVEL = 3;
 const MAGNIFIER_SIZE = 160;
-const BASE_API_URL = 'http://20.86.33.156:8080/wordpress/wp-json/hotspot/v1/get_hotspot';
+const BASE_API_URL = 'https://staging.pedpelop.gr/wp-json/hotspot/v1/get_hotspot';
 
 const fetchArtworkById = async (id: number) => {
   const response = await fetch(`${BASE_API_URL}/${id}`, {
