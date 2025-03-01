@@ -12,6 +12,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { ModeToggle } from '@/components/mode-toggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { Loader2 } from 'lucide-react';
 
 const ZOOM_LEVEL = 3;
@@ -120,7 +121,10 @@ const ArtworkView = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
-        <ModeToggle />
+        <div className="flex justify-end items-center space-x-2">
+          <LanguageToggle />
+          <ModeToggle />
+        </div>
         
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <div className="flex-1">
