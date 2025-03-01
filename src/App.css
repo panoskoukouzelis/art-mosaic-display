@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -96,4 +97,28 @@
   opacity: 1;
 }
 
+/* Προσθήκη στυλ για fullscreen Swiper */
+.swiper {
+  width: 100%;
+  height: 100%;
+}
 
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Στυλ για τις εικόνες του screensaver σε πλήρη οθόνη */
+.swiper-slide img {
+  transition: transform 0.5s ease;
+}
+
+.swiper-slide-active img {
+  transform: scale(1);
+}
+
+.swiper-slide-prev img,
+.swiper-slide-next img {
+  transform: scale(0.8);
+}
