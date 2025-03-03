@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +9,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ArtworkView from "./pages/ArtworkView";
+import Slider from "./pages/Slider";
 import Screensaver from "./components/Screensaver";
 import "./i18n/config";
 
@@ -48,6 +50,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/artwork/:id" element={<ArtworkView />} />
+              <Route path="/slider" element={<Slider />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
