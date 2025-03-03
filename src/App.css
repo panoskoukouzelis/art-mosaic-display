@@ -119,6 +119,8 @@
   z-index: 10;
   border-radius: 0 0 10px 10px; /* Στρογγυλεμένες γωνίες μόνο στο κάτω μέρος */
   clip-path: polygon(5% 100%, 100% 100%, 93% 100%, 100% 0%, 50% 0%, 0% 0%); /* Διαγώνια σχήματα */
+  text-align: center; /* Add this to center the text */
+  color: white; /* Add text color for better visibility */
 }
 
 /* Container κειμένου στο κάτω μέρος */
