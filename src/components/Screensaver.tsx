@@ -14,6 +14,7 @@ const AUTOPLAY_INTERVAL = 3000; // 3 seconds
 
 const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   const [images, setImages] = useState<string[]>([]);
+  const [inspectMode, setInspectMode] = useState(false);
 
   useEffect(() => {
     axios.get('https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots/?page=1')
@@ -39,22 +40,43 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   }, [autoplay]);
 
   useEffect(() => {
-    const handleInteraction = () => onInteraction();
+    const handleInteraction = (e: MouseEvent | TouchEvent | KeyboardEvent) => {
+      // Skip if in inspect mode
+      if (inspectMode) return;
+      
+      // Allow regular interaction
+      onInteraction();
+    };
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Toggle inspect mode with Ctrl+Shift+I
+      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        e.preventDefault();
+        setInspectMode(prev => !prev);
+        console.log(`Inspect mode ${!inspectMode ? 'enabled' : 'disabled'}`);
+      }
+      
+      // If not inspect mode toggle, handle as regular interaction
+      if (!(e.ctrlKey && e.shiftKey && e.key === 'I') && !inspectMode) {
+        onInteraction();
+      }
+    };
+
     window.addEventListener('mousemove', handleInteraction);
     window.addEventListener('touchstart', handleInteraction);
-    window.addEventListener('keydown', handleInteraction);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('mousemove', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
-      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onInteraction]);
+  }, [onInteraction, inspectMode]);
 
   return (
     <div className="fixed inset-0 bg-neutral-900 z-50 flex flex-col">
       <div className="thumbnail-container">
-        Art Gallery
+        Art Gallery {inspectMode && "(Inspect Mode Enabled)"}
       </div>
       
       <div className="flex-grow flex items-center justify-center">
@@ -90,7 +112,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
       </div>
       
       <div className="text-container">
-        Art Gallery
+        Art Gallery {inspectMode && "(Inspect Mode Enabled)"}
       </div>
     </div>
   );
