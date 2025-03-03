@@ -103,12 +103,37 @@
   height: 100%; /* Full height of the container */
 }
 
-.thumbnail-container,
-.text-container {
-  background: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
-  padding: 1rem;
-  color: white;
-  font-weight: 500;
-  letter-spacing: 1px;
+/* Thumbnails στο επάνω μέρος */
+.thumbnail-container {
+  display: flex;
+  justify-content: center; /* Στοιχίζει τα thumbnails στο κέντρο */
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  left: 50%; /* Κεντρική στοιχείωση */
+  transform: translateX(-50%); /* Μεταφράζει το στοιχείο στην αριστερή πλευρά του κέντρου */
+  width: 50%; /* Πλάτος 50% του slider */
+  background-color: #333; /* Σκούρο γκρι χρώμα */
   z-index: 10;
+  border-radius: 0 0 10px 10px; /* Στρογγυλεμένες γωνίες μόνο στο κάτω μέρος */
+  clip-path: polygon(5% 100%, 100% 100%, 93% 100%, 100% 0%, 50% 0%, 0% 0%); /* Διαγώνια σχήματα */
+}
+
+/* Container κειμένου στο κάτω μέρος */
+.text-container {
+  position: absolute;
+  bottom: 0; /* Κάτω μέρος του carousel */
+  left: 50%; /* Κεντρική στοιχείωση */
+  transform: translateX(-50%); /* Μεταφράζει το στοιχείο στην αριστερή πλευρά του κέντρου */
+  width: 50%; /* Πλάτος 50% του slider */
+  background-color: #333; /* Σκούρο γκρι χρώμα */
+  z-index: 10;
+  border-radius: 10px 10px 0 0; /* Στρογγυλεμένες γωνίες μόνο στο επάνω μέρος */
+  padding: 10px; /* Padding για το κείμενο */
+  text-align: center; /* Κεντρική στοίχιση κειμένου */
+  clip-path: polygon(5% 0, 0% 100%, 100% 100%, 93% 0%, 95% 0%, 50% 0%); /* Διαγώνια σχήματα */
+  color: white; /* Χρώμα κειμένου */
+  font-size: 1.5rem; /* Μέγεθος κειμένου */
 }

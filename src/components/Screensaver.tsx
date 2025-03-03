@@ -53,7 +53,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
 
   return (
     <div className="fixed inset-0 bg-neutral-900 z-50 flex flex-col">
-      <div className="thumbnail-container w-full bg-black/50 p-4 text-white text-center text-xl">
+      <div className="thumbnail-container">
         Art Gallery
       </div>
       
@@ -89,7 +89,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
         </Swiper>
       </div>
       
-      <div className="text-container w-full bg-black/50 p-4 text-white text-center text-xl">
+      <div className="text-container">
         Art Gallery
       </div>
     </div>
