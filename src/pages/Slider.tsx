@@ -42,10 +42,19 @@ const Slider = () => {
 
   return (
     <div className="fixed inset-0 bg-neutral-900 z-50 flex flex-col">
-      <div className="thumbnail-container">
+      {/* Thumbnail Container (επάνω) */}
+      <div 
+        className="absolute left-1/2 transform -translate-x-1/2 text-center bg-gray-800 text-white rounded-b-lg"
+        style={{
+          width: "50%",
+          padding: "2.5rem", // 2.5rem padding
+          clipPath: "polygon(5% 100%, 100% 100%, 93% 100%, 100% 0%, 50% 0%, 0% 0%)",
+        }}
+      >
         Art Gallery {inspectMode && "(Inspect Mode Enabled)"}
       </div>
-      
+  
+      {/* Swiper Carousel */}
       <div className="flex-grow flex items-center justify-center">
         <Swiper
           effect="coverflow"
@@ -77,12 +86,23 @@ const Slider = () => {
           ))}
         </Swiper>
       </div>
-      
-      <div className="text-container">
+  
+      {/* Text Container (κάτω) */}
+      <div 
+        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center bg-gray-800 text-white rounded-t-lg"
+        style={{
+          width: "50%",
+          padding: "10px", // Padding για το κείμενο
+          fontSize: "1.5rem",
+          clipPath: "polygon(5% 0, 0% 100%, 100% 100%, 93% 0%, 95% 0%, 50% 0%)",
+        }}
+      >
         Art Gallery {inspectMode && "(Inspect Mode Enabled)"}
       </div>
     </div>
   );
+  
+  
 };
 
 export default Slider;

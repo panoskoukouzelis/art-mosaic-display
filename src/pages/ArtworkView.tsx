@@ -92,30 +92,56 @@ const ArtworkView = () => {
     });
   };
 
-  const SidebarContent = () => (
-    <div className="h-full overflow-y-auto">
+  const SidebarContent = () => {
+  const activeHotspotData = artwork.hotspots.find(h => h._id === activeHotspot);
+  
+  if (!activeHotspotData) return null;
+
+  return (
+    <div className="h-full overflow-y-auto space-y-4">
       <SheetHeader>
         <SheetTitle>Λεπτομέρεια</SheetTitle>
-        <SheetDescription>
-          {stripHtml(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "")}
-          
-          {/* Αν υπάρχει σύνδεσμος, εμφάνιση του */}
-          {artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link?.url && (
-            <div className="mt-4">
-              <a
-                href={artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link.url}
-                target={artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link.is_external ? "_blank" : "_self"}
-                rel={artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_image_link.nofollow ? "nofollow" : ""}
-                className="text-blue-500 underline"
-              >
-                {artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_btn}
-              </a>
-            </div>
-          )}
-        </SheetDescription>
       </SheetHeader>
+
+      {/* YouTube Video */}
+      {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
+        <div className="aspect-video rounded-lg overflow-hidden border">
+          <iframe
+            width="100%"
+            height="100%"
+            src={getYouTubeEmbedUrl(activeHotspotData.bwdihp_youtube_link)}
+            frameBorder="0"
+            allowFullScreen
+            className="rounded-lg"
+          />
+        </div>
+      )}
+
+      {/* Εικόνα με link αν υπάρχει */}
+      {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
+        <div className="mt-4">
+          <a
+            href={activeHotspotData.bwdihp_tooltip_image_link?.url || "#"}
+            target={activeHotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
+            rel={activeHotspotData.bwdihp_tooltip_image_link?.nofollow ? "nofollow" : ""}
+          >
+            <img
+              src={activeHotspotData.bwdihp_tooltip_image.url}
+              alt={activeHotspotData.bwdihp_tooltip_image.alt || "Hotspot Image"}
+              className="w-full rounded-lg border"
+            />
+          </a>
+        </div>
+      )}
+
+      {/* Περιεχόμενο με HTML */}
+      <SheetDescription>
+        <div dangerouslySetInnerHTML={{ __html: activeHotspotData.bwdihp_tooltip_content }} />
+      </SheetDescription>
     </div>
   );
+};
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
