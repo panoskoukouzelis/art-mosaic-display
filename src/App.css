@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -74,8 +75,8 @@
 }
 
 .carousel-item {
-  width: 300px;
-  height: 450px;
+  width: 100%;
+  height: auto;
   position: relative;
   transform-origin: center;
   transition: transform 0.5s ease, opacity 0.5s ease;
@@ -96,4 +97,18 @@
   opacity: 1;
 }
 
+/* Screensaver styles */
+.swiper {
+  width: 100vw; /* Full viewport width */
+  height: 100%; /* Full height of the container */
+}
 
+.thumbnail-container,
+.text-container {
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+  padding: 1rem;
+  color: white;
+  font-weight: 500;
+  letter-spacing: 1px;
+  z-index: 10;
+}

@@ -1,14 +1,16 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperCore } from 'swiper';
-import { EffectCoverflow } from 'swiper/modules';
+import { EffectCoverflow, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
+import 'swiper/css/autoplay';
 
-SwiperCore.use([EffectCoverflow]);
+SwiperCore.use([EffectCoverflow, Autoplay]);
 
-const AUTOPLAY_INTERVAL = 3000; // 3 δευτερόλεπτα
+const AUTOPLAY_INTERVAL = 3000; // 3 seconds
 
 const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   const [images, setImages] = useState<string[]>([]);
@@ -18,7 +20,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
       .then(response => {
         const fetchedImages = response.data.data.map((item: any) => item.thumbnail);
         setImages(fetchedImages);
-        console.log(fetchedImages); // Εκτυπώστε τα δεδομένα για έλεγχο
+        console.log(fetchedImages); // Log data for checking
       })
       .catch(error => console.error('Error fetching images:', error));
   }, []);
@@ -50,29 +52,46 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   }, [onInteraction]);
 
   return (
-    <div className="fixed inset-0 bg-neutral-900 z-50 flex items-center justify-center">
-      <Swiper
-        effect="coverflow"
-        grabCursor={true}
-        centeredSlides={true}
-        loop={true}
-        slidesPerView={3} // Εμφάνιση 3 slides κάθε φορά
-        slidesPerGroup={1} // Μετακίνηση κατά 1 slide κάθε φορά
-        autoplay={{
-          delay: AUTOPLAY_INTERVAL,
-          disableOnInteraction: false,
-        }}
-        modules={[EffectCoverflow]}
-        className="w-full max-w-4xl"
-      >
-        {images.map((src, index) => (
-          <SwiperSlide key={index} className="relative">
-            <div className="carousel-item" style={{ '--index': index } as React.CSSProperties}>
-              <img src={src} alt={`Slide ${index}`} className="w-full h-auto rounded-lg shadow-xl" draggable={false} />
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+    <div className="fixed inset-0 bg-neutral-900 z-50 flex flex-col">
+      <div className="thumbnail-container w-full bg-black/50 p-4 text-white text-center text-xl">
+        Art Gallery
+      </div>
+      
+      <div className="flex-grow flex items-center justify-center">
+        <Swiper
+          effect="coverflow"
+          grabCursor={true}
+          centeredSlides={true}
+          loop={true}
+          slidesPerView={3}
+          slidesPerGroup={1}
+          autoplay={{
+            delay: AUTOPLAY_INTERVAL,
+            disableOnInteraction: false,
+          }}
+          coverflowEffect={{
+            rotate: 50,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows: true,
+          }}
+          modules={[EffectCoverflow, Autoplay]}
+          className="w-full"
+        >
+          {images.map((src, index) => (
+            <SwiperSlide key={index} className="relative">
+              <div className="carousel-item" style={{ '--index': index } as React.CSSProperties}>
+                <img src={src} alt={`Slide ${index}`} className="w-full h-auto rounded-lg shadow-xl" draggable={false} />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+      
+      <div className="text-container w-full bg-black/50 p-4 text-white text-center text-xl">
+        Art Gallery
+      </div>
     </div>
   );
 };
