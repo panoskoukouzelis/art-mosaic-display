@@ -95,54 +95,54 @@ const ArtworkView = () => {
   };
 
   const SidebarContent = () => {
-  const activeHotspotData = artwork.hotspots.find(h => h._id === activeHotspot);
-  
-  if (!activeHotspotData) return null;
+    const activeHotspotData = artwork.hotspots.find(h => h._id === activeHotspot);
+    
+    if (!activeHotspotData) return null;
 
-  return (
-    <div className="h-full overflow-y-auto space-y-4">
-      <SheetHeader>
-        <SheetTitle>Λεπτομέρεια</SheetTitle>
-      </SheetHeader>
+    return (
+      <div className="h-full overflow-y-auto space-y-4">
+        <SheetHeader>
+          <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || 'Λεπτομέρεια'}</SheetTitle>
+        </SheetHeader>
 
-      {/* YouTube Video */}
-      {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
-        <div className="aspect-video rounded-lg overflow-hidden border">
-          <iframe
-            width="100%"
-            height="100%"
-            src={getYouTubeEmbedUrl(activeHotspotData.bwdihp_youtube_link)}
-            frameBorder="0"
-            allowFullScreen
-            className="rounded-lg"
-          />
-        </div>
-      )}
-
-      {/* Εικόνα με link αν υπάρχει */}
-      {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
-        <div className="mt-4">
-          <a
-            href={activeHotspotData.bwdihp_tooltip_image_link?.url || "#"}
-            target={activeHotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
-            rel={activeHotspotData.bwdihp_tooltip_image_link?.nofollow ? "nofollow" : ""}
-          >
-            <img
-              src={activeHotspotData.bwdihp_tooltip_image.url}
-              alt={activeHotspotData.bwdihp_tooltip_image.alt || "Hotspot Image"}
-              className="w-full rounded-lg border"
+        {/* YouTube Video */}
+        {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
+          <div className="aspect-video rounded-lg overflow-hidden border">
+            <iframe
+              width="100%"
+              height="100%"
+              src={getYouTubeEmbedUrl(activeHotspotData.bwdihp_youtube_link)}
+              frameBorder="0"
+              allowFullScreen
+              className="rounded-lg"
             />
-          </a>
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Περιεχόμενο με HTML */}
-      <SheetDescription>
-        <div dangerouslySetInnerHTML={{ __html: activeHotspotData.bwdihp_tooltip_content }} />
-      </SheetDescription>
-    </div>
-  );
-};
+        {/* Εικόνα με link αν υπάρχει */}
+        {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
+          <div className="mt-4">
+            <a
+              href={activeHotspotData.bwdihp_tooltip_image_link?.url || "#"}
+              target={activeHotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
+              rel={activeHotspotData.bwdihp_tooltip_image_link?.nofollow ? "nofollow" : ""}
+            >
+              <img
+                src={activeHotspotData.bwdihp_tooltip_image.url}
+                alt={activeHotspotData.bwdihp_tooltip_image.alt || "Hotspot Image"}
+                className="w-full rounded-lg border"
+              />
+            </a>
+          </div>
+        )}
+
+        {/* Περιεχόμενο με HTML */}
+        <SheetDescription>
+          <div dangerouslySetInnerHTML={{ __html: activeHotspotData.bwdihp_tooltip_content }} />
+        </SheetDescription>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -236,25 +236,7 @@ const ArtworkView = () => {
           ) : (
             activeHotspot && (
               <div className="w-80 h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Λεπτομέρεια</h3>
-                  {isYouTubeLink(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "") ? (
-                    <div className="aspect-video rounded-lg overflow-hidden border">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        src={getYouTubeEmbedUrl(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "")}
-                        frameBorder="0"
-                        allowFullScreen
-                        className="rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {stripHtml(artwork.hotspots.find(h => h._id === activeHotspot)?.bwdihp_tooltip_content || "")}
-                    </p>
-                  )}
-                </div>
+                <SidebarContent />
               </div>
             )
           )}
