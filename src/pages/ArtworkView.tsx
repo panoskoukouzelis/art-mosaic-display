@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hand } from 'lucide-react';
@@ -105,12 +106,14 @@ const ArtworkView = () => {
 
         {/* YouTube Video */}
         {hotspotData.bwdihp_tooltip_video_show === "yes" && hotspotData.bwdihp_youtube_link && (
-          <div className="aspect-video rounded-lg overflow-hidden border">
+          <div className="aspect-video rounded-lg overflow-hidden border mb-4">
             <iframe
               width="100%"
               height="100%"
               src={getYouTubeEmbedUrl(hotspotData.bwdihp_youtube_link)}
+              title="YouTube video"
               frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="rounded-lg"
             />
@@ -119,7 +122,7 @@ const ArtworkView = () => {
 
         {/* Εικόνα με link αν υπάρχει */}
         {hotspotData.bwdihp_tooltip_image_show === "yes" && hotspotData.bwdihp_tooltip_image?.url && (
-          <div className="mt-4">
+          <div className="mt-4 mb-4">
             <a
               href={hotspotData.bwdihp_tooltip_image_link?.url || "#"}
               target={hotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
@@ -157,12 +160,14 @@ const ArtworkView = () => {
 
             {/* YouTube Video */}
             {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
-              <div className="aspect-video rounded-lg overflow-hidden border">
+              <div className="aspect-video rounded-lg overflow-hidden border mb-4">
                 <iframe
                   width="100%"
                   height="100%"
                   src={getYouTubeEmbedUrl(activeHotspotData.bwdihp_youtube_link)}
+                  title="YouTube video"
                   frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="rounded-lg"
                 />
@@ -171,7 +176,7 @@ const ArtworkView = () => {
 
             {/* Εικόνα με link αν υπάρχει */}
             {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
-              <div className="mt-4">
+              <div className="mt-4 mb-4">
                 <a
                   href={activeHotspotData.bwdihp_tooltip_image_link?.url || "#"}
                   target={activeHotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
