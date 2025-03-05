@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hand } from 'lucide-react';
@@ -95,24 +94,22 @@ const ArtworkView = () => {
     });
   };
 
-  const SidebarContent = () => {
-    const activeHotspotData = artwork.hotspots.find(h => h._id === activeHotspot);
-    
-    if (!activeHotspotData) return null;
+  const HotspotContent = ({ hotspotData }) => {
+    if (!hotspotData) return null;
 
     return (
       <div className="h-full overflow-y-auto space-y-4">
-        <SheetHeader>
-          <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || 'Λεπτομέρεια'}</SheetTitle>
-        </SheetHeader>
+        <div className="mb-2">
+          <h2 className="text-lg font-semibold text-foreground">{hotspotData.bwdihp_hotspot_title || 'Λεπτομέρεια'}</h2>
+        </div>
 
         {/* YouTube Video */}
-        {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
+        {hotspotData.bwdihp_tooltip_video_show === "yes" && hotspotData.bwdihp_youtube_link && (
           <div className="aspect-video rounded-lg overflow-hidden border">
             <iframe
               width="100%"
               height="100%"
-              src={getYouTubeEmbedUrl(activeHotspotData.bwdihp_youtube_link)}
+              src={getYouTubeEmbedUrl(hotspotData.bwdihp_youtube_link)}
               frameBorder="0"
               allowFullScreen
               className="rounded-lg"
@@ -121,16 +118,16 @@ const ArtworkView = () => {
         )}
 
         {/* Εικόνα με link αν υπάρχει */}
-        {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
+        {hotspotData.bwdihp_tooltip_image_show === "yes" && hotspotData.bwdihp_tooltip_image?.url && (
           <div className="mt-4">
             <a
-              href={activeHotspotData.bwdihp_tooltip_image_link?.url || "#"}
-              target={activeHotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
-              rel={activeHotspotData.bwdihp_tooltip_image_link?.nofollow ? "nofollow" : ""}
+              href={hotspotData.bwdihp_tooltip_image_link?.url || "#"}
+              target={hotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
+              rel={hotspotData.bwdihp_tooltip_image_link?.nofollow ? "nofollow" : ""}
             >
               <img
-                src={activeHotspotData.bwdihp_tooltip_image.url}
-                alt={activeHotspotData.bwdihp_tooltip_image.alt || "Hotspot Image"}
+                src={hotspotData.bwdihp_tooltip_image.url}
+                alt={hotspotData.bwdihp_tooltip_image.alt || "Hotspot Image"}
                 className="w-full rounded-lg border"
               />
             </a>
@@ -138,10 +135,66 @@ const ArtworkView = () => {
         )}
 
         {/* Περιεχόμενο με HTML */}
-        <SheetDescription>
-          <div dangerouslySetInnerHTML={{ __html: activeHotspotData.bwdihp_tooltip_content }} />
-        </SheetDescription>
+        <div className="text-sm text-muted-foreground">
+          <div dangerouslySetInnerHTML={{ __html: hotspotData.bwdihp_tooltip_content }} />
+        </div>
       </div>
+    );
+  };
+
+  const SidebarContent = () => {
+    const activeHotspotData = artwork.hotspots.find(h => h._id === activeHotspot);
+    
+    if (!activeHotspotData) return null;
+
+    return (
+      <>
+        {isMobile ? (
+          <div className="h-full overflow-y-auto space-y-4">
+            <SheetHeader>
+              <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || 'Λεπτομέρεια'}</SheetTitle>
+            </SheetHeader>
+
+            {/* YouTube Video */}
+            {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
+              <div className="aspect-video rounded-lg overflow-hidden border">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={getYouTubeEmbedUrl(activeHotspotData.bwdihp_youtube_link)}
+                  frameBorder="0"
+                  allowFullScreen
+                  className="rounded-lg"
+                />
+              </div>
+            )}
+
+            {/* Εικόνα με link αν υπάρχει */}
+            {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
+              <div className="mt-4">
+                <a
+                  href={activeHotspotData.bwdihp_tooltip_image_link?.url || "#"}
+                  target={activeHotspotData.bwdihp_tooltip_image_link?.is_external ? "_blank" : "_self"}
+                  rel={activeHotspotData.bwdihp_tooltip_image_link?.nofollow ? "nofollow" : ""}
+                >
+                  <img
+                    src={activeHotspotData.bwdihp_tooltip_image.url}
+                    alt={activeHotspotData.bwdihp_tooltip_image.alt || "Hotspot Image"}
+                    className="w-full rounded-lg border"
+                  />
+                </a>
+              </div>
+            )}
+
+            {/* Περιεχόμενο με HTML */}
+            <SheetDescription>
+              <div dangerouslySetInnerHTML={{ __html: activeHotspotData.bwdihp_tooltip_content }} />
+            </SheetDescription>
+          </div>
+        ) : (
+          <HotspotContent hotspotData={activeHotspotData} />
+        )}
+      </>
     );
   };
 
