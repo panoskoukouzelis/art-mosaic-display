@@ -44,9 +44,17 @@ const isYouTubeLink = (url: string) => {
 };
 
 const getYouTubeEmbedUrl = (url: string) => {
+  if (!url) return "";
+  
+  // Αν είναι μόνο το ID, επιστρέφουμε απευθείας το embed link
+  if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+    return `https://www.youtube.com/embed/${url}`;
+  }
+
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   return match ? `https://www.youtube.com/embed/${match[1]}` : "";
 };
+
 
 const ArtworkView = () => {
   const { id } = useParams();
