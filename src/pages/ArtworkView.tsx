@@ -333,13 +333,13 @@ const ArtworkView = () => {
                 if (!isOpen) setActiveHotspot(null); 
               }}
             >
-              <SheetContent side="left">
+              <SheetContent side="left" className="w-[350px] sm:w-[450px] max-w-full">
                 <SidebarContent />
               </SheetContent>
             </Sheet>
           ) : (
             activeHotspot && (
-              <div className="w-80 h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
+              <div className="w-[350px] lg:w-[450px] h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
                 <SidebarContent />
               </div>
             )
