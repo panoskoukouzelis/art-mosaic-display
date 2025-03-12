@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Hand, ArrowLeft, X } from 'lucide-react';
@@ -53,7 +52,6 @@ const isYouTubeLink = (url: string) => {
 const getYouTubeEmbedUrl = (url: string) => {
   if (!url) return "";
   
-  // Αν είναι μόνο το ID, επιστρέφουμε απευθείας το embed link
   if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
     return `https://www.youtube.com/embed/${url}`;
   }
@@ -61,7 +59,6 @@ const getYouTubeEmbedUrl = (url: string) => {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   return match ? `https://www.youtube.com/embed/${match[1]}` : "";
 };
-
 
 const ArtworkView = () => {
   const { id } = useParams();
@@ -132,7 +129,6 @@ const ArtworkView = () => {
           )}
         </div>
 
-        {/* YouTube Video */}
         {hotspotData.bwdihp_tooltip_video_show === "yes" && hotspotData.bwdihp_youtube_link && (
           <div className="aspect-video rounded-lg overflow-hidden border mb-4">
             <iframe
@@ -148,7 +144,6 @@ const ArtworkView = () => {
           </div>
         )}
 
-        {/* Εικόνα με link αν υπάρχει */}
         {hotspotData.bwdihp_tooltip_image_show === "yes" && hotspotData.bwdihp_tooltip_image?.url && (
           <div className="mt-4 mb-4">
             <a
@@ -165,7 +160,6 @@ const ArtworkView = () => {
           </div>
         )}
 
-        {/* Περιεχόμενο με HTML */}
         <div className="text-sm text-muted-foreground">
           <div dangerouslySetInnerHTML={{ __html: hotspotData.bwdihp_tooltip_content }} />
         </div>
@@ -186,7 +180,6 @@ const ArtworkView = () => {
               <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || artwork.title}</SheetTitle>
             </SheetHeader>
 
-            {/* YouTube Video */}
             {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
               <div className="aspect-video rounded-lg overflow-hidden border mb-4">
                 <iframe
@@ -202,7 +195,6 @@ const ArtworkView = () => {
               </div>
             )}
 
-            {/* Εικόνα με link αν υπάρχει */}
             {activeHotspotData.bwdihp_tooltip_image_show === "yes" && activeHotspotData.bwdihp_tooltip_image?.url && (
               <div className="mt-4 mb-4">
                 <a
@@ -219,7 +211,6 @@ const ArtworkView = () => {
               </div>
             )}
 
-            {/* Περιεχόμενο με HTML */}
             <SheetDescription>
               <div dangerouslySetInnerHTML={{ __html: activeHotspotData.bwdihp_tooltip_content }} />
             </SheetDescription>
@@ -317,7 +308,7 @@ const ArtworkView = () => {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{t('artwork.open')}</p>
+                        <p>{t('artwork.seeInfo')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -339,7 +330,7 @@ const ArtworkView = () => {
             </Sheet>
           ) : (
             activeHotspot && (
-              <div className="w-[350px] lg:w-[450px] h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
+              <div className="w-[450px] lg:w-[550px] h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
                 <SidebarContent />
               </div>
             )

@@ -8,6 +8,7 @@
   },
   "artwork": {
     "detail": "Detail",
-    "open": "Open"
+    "open": "Open",
+    "seeInfo": "See information"
   }
 }
