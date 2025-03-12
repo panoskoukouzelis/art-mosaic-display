@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Hand } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Hand, ArrowLeft, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -11,6 +11,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Loader2 } from 'lucide-react';
@@ -58,6 +65,7 @@ const getYouTubeEmbedUrl = (url: string) => {
 
 const ArtworkView = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [artwork, setArtwork] = useState<any>(null);
   const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
   const [showMagnifier, setShowMagnifier] = useState(false);
@@ -108,8 +116,20 @@ const ArtworkView = () => {
 
     return (
       <div className="h-full overflow-y-auto space-y-4">
-        <div className="mb-2">
-          <h2 className="text-lg font-semibold text-foreground">{hotspotData.bwdihp_hotspot_title || 'Λεπτομέρεια'}</h2>
+        <div className="mb-2 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-foreground">
+            {hotspotData.bwdihp_hotspot_title || t('artwork.detail')}
+          </h2>
+          {!isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setActiveHotspot(null)}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* YouTube Video */}
@@ -214,9 +234,19 @@ const ArtworkView = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-end items-center gap-2 mb-8">
-          <LanguageToggle />
-          <ModeToggle />
+        <div className="flex justify-between items-center gap-2 mb-8">
+          <Button
+            variant="ghost"
+            className="gap-2"
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {t('gallery.title')}
+          </Button>
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ModeToggle />
+          </div>
         </div>
         
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
@@ -266,36 +296,43 @@ const ArtworkView = () => {
                 )}
 
                 {artwork.hotspots.map((hotspot) => (
-                  <button
-                    key={hotspot._id}
-                    className={cn(
-                      "absolute -ml-4 -mt-4 w-8 h-8 flex items-center justify-center",
-                      "hover:scale-110 transition-transform"
-                    )}
-                    style={{ left: `${hotspot.bwdihp_hotspot_left_position.size}%`, top: `${hotspot.bwdihp_hotspot_top_position.size}%` }}
-                    onPointerEnter={() => {
-                      setIsOverHotspot(true);
-                      setActiveHotspot(hotspot._id);
-                    }}
-                    onPointerLeave={() => {
-                      if (!activeHotspot) {
-                        setIsOverHotspot(false);
-                      }
-                    }}
-                    onClick={() => {
-                      setIsOverHotspot(true);
-                      setActiveHotspot(hotspot._id);
-                    }}
-                  >
-                    <Hand className="w-6 h-6 text-white drop-shadow-lg" />
-                  </button>
+                  <TooltipProvider key={hotspot._id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className={cn(
+                            "absolute -ml-4 -mt-4 w-8 h-8 flex items-center justify-center",
+                            "hover:scale-110 transition-transform"
+                          )}
+                          style={{ 
+                            left: `${hotspot.bwdihp_hotspot_left_position.size}%`, 
+                            top: `${hotspot.bwdihp_hotspot_top_position.size}%` 
+                          }}
+                          onClick={() => {
+                            setIsOverHotspot(true);
+                            setActiveHotspot(hotspot._id);
+                          }}
+                        >
+                          <Hand className="w-6 h-6 text-white drop-shadow-lg" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('artwork.open')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
             </div>
           </div>
 
           {isMobile ? (
-            <Sheet open={!!activeHotspot} onOpenChange={(isOpen) => { if (!isOpen) setActiveHotspot(null); }}>
+            <Sheet 
+              open={!!activeHotspot} 
+              onOpenChange={(isOpen) => { 
+                if (!isOpen) setActiveHotspot(null); 
+              }}
+            >
               <SheetContent side="left">
                 <SidebarContent />
               </SheetContent>
