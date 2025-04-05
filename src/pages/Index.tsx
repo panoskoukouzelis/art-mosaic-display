@@ -4,7 +4,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useTranslation } from 'react-i18next';
 import { useStaticTexts } from '@/hooks/useStaticTexts';
-import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -22,9 +22,9 @@ const Index = () => {
         </div>
         <header className="mb-8 md:mb-12">
           {isLoading ? (
-            <div className="flex flex-col space-y-4 animate-pulse">
-              <div className="h-8 w-64 bg-muted rounded"></div>
-              <div className="h-6 w-96 bg-muted rounded"></div>
+            <div className="flex flex-col space-y-4">
+              <Skeleton className="h-9 md:h-10 xl:h-12 w-64" />
+              <Skeleton className="h-6 md:h-7 w-96" />
             </div>
           ) : (
             <>

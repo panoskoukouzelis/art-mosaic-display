@@ -20,6 +20,7 @@ interface StaticTextsResponse {
 
 const fetchStaticTexts = async (): Promise<StaticTextsResponse> => {
   const response = await axios.get('https://staging.pedpelop.gr/wp-json/hotspot/v1/static_texts');
+  console.log('Static texts fetched:', response.data);
   return response.data;
 };
 
@@ -36,10 +37,13 @@ export const useStaticTexts = () => {
   
   const getText = (key: string): string => {
     if (!data || !data[key]) {
+      console.log(`No data for key: ${key}`);
       return '';
     }
     
-    return data[key][currentLang as 'el' | 'en'] || '';
+    const text = data[key][currentLang as 'el' | 'en'] || '';
+    console.log(`Text for ${key} (${currentLang}):`, text);
+    return text;
   };
   
   return {
