@@ -21,6 +21,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useStaticTexts } from '@/hooks/useStaticTexts';
 
 const ZOOM_LEVEL = 3;
 const MAGNIFIER_SIZE = 160;
@@ -70,6 +71,7 @@ const ArtworkView = () => {
   const [isOverHotspot, setIsOverHotspot] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
+  const { getText, isLoading } = useStaticTexts();
 
   useEffect(() => {
     const fetchArtwork = async () => {
@@ -94,6 +96,9 @@ const ArtworkView = () => {
       </div>
     );
   }
+
+  const detailsBackButtonText = getText('detailsBackButton') || t('gallery.title');
+  const detailsHeadingText = getText('detailsHeading') || t('artwork.seeInfo');
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const elem = e.currentTarget;
@@ -232,7 +237,7 @@ const ArtworkView = () => {
             onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
-            {t('gallery.title')}
+            {detailsBackButtonText}
           </Button>
           <div className="flex items-center gap-2">
             <LanguageToggle />
@@ -308,7 +313,7 @@ const ArtworkView = () => {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{t('artwork.seeInfo')}</p>
+                        <p>{detailsHeadingText}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
