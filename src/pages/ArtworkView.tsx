@@ -100,7 +100,7 @@ const ArtworkView = () => {
 
   const detailsBackButtonText = getText('detailsBackButton') || t('gallery.title');
   const detailsHeadingText = getText('detailsHeading') || t('artwork.seeInfo');
-  const detailsMoreText = getText('detailsMoreButton') || 'Περισσότερα';
+  // Remove the detailsMoreText variable as we'll now use detailsHeadingText instead
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const elem = e.currentTarget;
@@ -122,7 +122,7 @@ const ArtworkView = () => {
       <div className="h-full overflow-y-auto space-y-4">
         <div className="mb-2 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-foreground">
-            {hotspotData.bwdihp_hotspot_title || artwork.title || detailsMoreText}
+            {hotspotData.bwdihp_hotspot_title || artwork.title || detailsHeadingText}
           </h2>
           {!isMobile && (
             <Button
@@ -184,7 +184,7 @@ const ArtworkView = () => {
         {isMobile ? (
           <div className="h-full overflow-y-auto space-y-4">
             <SheetHeader>
-              <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || artwork.title || detailsMoreText}</SheetTitle>
+              <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || artwork.title || detailsHeadingText}</SheetTitle>
             </SheetHeader>
 
             {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
