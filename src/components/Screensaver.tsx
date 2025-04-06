@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperCore } from 'swiper';
 import { EffectCoverflow, Autoplay } from 'swiper/modules';
+import { useStaticTexts } from '../hooks/useStaticTexts';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/autoplay';
@@ -15,6 +16,7 @@ const AUTOPLAY_INTERVAL = 3000; // 3 seconds
 const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   const [images, setImages] = useState<string[]>([]);
   const [inspectMode, setInspectMode] = useState(false);
+  const { getText, isLoading } = useStaticTexts();
 
   useEffect(() => {
     axios.get('https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots/?page=1')
@@ -73,6 +75,9 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
     };
   }, [onInteraction, inspectMode]);
 
+  const topText = getText('sliderTop') || 'Art Gallery';
+  const bottomText = getText('sliderBottom') || 'Art Gallery';
+
   return (
     <div className="fixed inset-0 bg-neutral-900 z-50 flex flex-col">
       {/* Thumbnail Container (επάνω) */}
@@ -84,7 +89,7 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
           clipPath: "polygon(5% 100%, 100% 100%, 93% 100%, 100% 0%, 50% 0%, 0% 0%)",
         }}
       >
-        Art Gallery {inspectMode && "(Inspect Mode Enabled)"}
+        {isLoading ? 'Loading...' : topText} {inspectMode && "(Inspect Mode Enabled)"}
       </div>
   
       {/* Swiper Carousel */}
@@ -130,11 +135,10 @@ const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
           clipPath: "polygon(5% 0, 0% 100%, 100% 100%, 93% 0%, 95% 0%, 50% 0%)",
         }}
       >
-        Art Gallery {inspectMode && "(Inspect Mode Enabled)"}
+        {isLoading ? 'Loading...' : bottomText} {inspectMode && "(Inspect Mode Enabled)"}
       </div>
     </div>
   );
-  
 };
 
 export default Screensaver;
