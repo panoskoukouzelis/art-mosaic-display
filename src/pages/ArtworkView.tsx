@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Hand, ArrowLeft, X } from 'lucide-react';
@@ -100,7 +99,6 @@ const ArtworkView = () => {
 
   const detailsBackButtonText = getText('detailsBackButton') || t('gallery.title');
   const detailsHeadingText = getText('detailsHeading') || t('artwork.seeInfo');
-  // Remove the detailsMoreText variable as we'll now use detailsHeadingText instead
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const elem = e.currentTarget;
