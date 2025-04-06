@@ -120,7 +120,7 @@ const ArtworkView = () => {
       <div className="h-full overflow-y-auto space-y-4">
         <div className="mb-2 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-foreground">
-            {hotspotData.bwdihp_hotspot_title || artwork.title || detailsHeadingText}
+            {detailsHeadingText}
           </h2>
           {!isMobile && (
             <Button
@@ -182,7 +182,7 @@ const ArtworkView = () => {
         {isMobile ? (
           <div className="h-full overflow-y-auto space-y-4">
             <SheetHeader>
-              <SheetTitle>{activeHotspotData.bwdihp_hotspot_title || artwork.title || detailsHeadingText}</SheetTitle>
+              <SheetTitle>{detailsHeadingText}</SheetTitle>
             </SheetHeader>
 
             {activeHotspotData.bwdihp_tooltip_video_show === "yes" && activeHotspotData.bwdihp_youtube_link && (
