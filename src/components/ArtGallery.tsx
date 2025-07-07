@@ -35,7 +35,7 @@ const fetchAllArtworks = async () => {
   return allArtworks;
 };
 
-const ArtworkCard = ({ artwork, onClick, isLoading: isImageLoading }) => {
+const ArtworkCard = ({ artwork, onClick }) => {
   const { t } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -111,16 +111,14 @@ const ArtGallery = () => {
     navigate(`/artwork/${id}`);
   };
 
-  // Show empty grid while loading initial data
+  // Show loading skeleton only while fetching API data
   if (isLoading) {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="bg-[#15161a] rounded-lg overflow-hidden shadow-lg border border-gray-700/50">
-              <div className="aspect-[4/3] bg-gray-800 animate-pulse flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-              </div>
+              <div className="aspect-[4/3] bg-gray-800 animate-pulse"></div>
               <div className="p-4">
                 <div className="h-6 bg-gray-700 rounded animate-pulse mb-2"></div>
                 <div className="h-4 bg-gray-700 rounded animate-pulse w-3/4"></div>
@@ -148,7 +146,6 @@ const ArtGallery = () => {
             key={artwork.post_id}
             artwork={artwork}
             onClick={() => handleArtworkClick(artwork.post_id)}
-            isLoading={false}
           />
         ))}
       </div>
