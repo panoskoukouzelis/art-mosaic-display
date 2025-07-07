@@ -1,11 +1,10 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronRight, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import ArtworkCard from './ArtworkCard';
 
 const BASE_API_URL = 'https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots';
 
@@ -23,6 +22,63 @@ const fetchArtworksPage = async (page) => {
   }
 
   return response.json();
+};
+
+const ArtworkCard = ({ artwork, onClick, isLoading: isImageLoading }) => {
+  const { t } = useTranslation();
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  return (
+    <div 
+      className="group relative bg-[#15161a] dark:bg-[#15161a] rounded-lg overflow-hidden shadow-lg border border-gray-700/50 cursor-pointer transition-all duration-300 hover:shadow-xl"
+      onClick={onClick}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden">
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        )}
+        <img 
+          src={artwork.thumbnail} 
+          alt={artwork.title} 
+          className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          loading="lazy"
+        />
+        
+        {/* View Details Button */}
+        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <Button
+            size="sm"
+            className="bg-[hsl(var(--gallery-accent))] hover:bg-[hsl(var(--gallery-accent))]/90 text-white border-0"
+          >
+            <Eye className="h-4 w-4 mr-1" />
+            {t('artwork.detail')}
+          </Button>
+        </div>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-[hsl(var(--gallery-accent))] group-hover:text-[hsl(var(--gallery-accent))] transition-colors duration-300 mb-2">
+          {artwork.title}
+        </h3>
+        {artwork.description && (
+          <p className="text-sm text-gray-300 leading-relaxed">
+            {truncateText(artwork.description)}
+          </p>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const ArtGallery = () => {
@@ -62,10 +118,23 @@ const ArtGallery = () => {
     }
   };
 
+  // Show placeholder cards while loading initial data
   if (isLoading && !artworks.length) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="bg-[#15161a] rounded-lg overflow-hidden shadow-lg border border-gray-700/50">
+              <div className="aspect-[4/3] bg-gray-800 animate-pulse flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              </div>
+              <div className="p-4">
+                <div className="h-6 bg-gray-700 rounded animate-pulse mb-2"></div>
+                <div className="h-4 bg-gray-700 rounded animate-pulse w-3/4"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -82,15 +151,12 @@ const ArtGallery = () => {
     <div className="space-y-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {artworks.map((artwork) => (
-          <div key={artwork.post_id} className="flex justify-center">
-            <div 
-              className="relative p-4 rounded-lg shadow-lg border border-gray-300 cursor-pointer transition duration-300 dark:bg-gray-800 bg-white" 
-              onClick={() => handleArtworkClick(artwork.post_id)}
-            >
-              <img src={artwork.thumbnail} alt={artwork.title} className="w-full h-auto object-cover rounded-sm shadow-md" />
-              <p className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300 mt-3">{artwork.title}</p>
-            </div>
-          </div>
+          <ArtworkCard
+            key={artwork.post_id}
+            artwork={artwork}
+            onClick={() => handleArtworkClick(artwork.post_id)}
+            isLoading={false}
+          />
         ))}
       </div>
 

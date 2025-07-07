@@ -53,6 +53,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "gallery-accent": "hsl(var(--gallery-accent))",
       },
       borderRadius: {
         lg: "var(--radius)",
