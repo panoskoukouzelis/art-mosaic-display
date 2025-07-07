@@ -8,30 +8,43 @@ import { useTranslation } from 'react-i18next';
 
 const BASE_API_URL = 'https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots';
 
-const fetchArtworksPage = async (page) => {
-  const response = await fetch(`${BASE_API_URL}/?page=${page}`, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
-  });
+const fetchAllArtworks = async () => {
+  const allArtworks = [];
+  let currentPage = 1;
+  let totalPages = 1;
 
-  if (!response.ok) {
-    throw new Error(`HTTP Error! Status: ${response.status}`);
+  while (currentPage <= totalPages) {
+    const response = await fetch(`${BASE_API_URL}/?page=${currentPage}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    allArtworks.push(...data.data);
+    totalPages = data.total_pages;
+    currentPage++;
   }
 
-  return response.json();
+  return allArtworks;
 };
 
 const ArtworkCard = ({ artwork, onClick, isLoading: isImageLoading }) => {
   const { t } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const truncateText = (text, maxLength = 100) => {
+  const truncateText = (text, maxLength = 120) => {
     if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    // Remove HTML tags for cleaner display
+    const cleanText = text.replace(/<[^>]*>/g, '');
+    if (cleanText.length <= maxLength) return cleanText;
+    return cleanText.substring(0, maxLength) + '...';
   };
 
   return (
@@ -68,12 +81,12 @@ const ArtworkCard = ({ artwork, onClick, isLoading: isImageLoading }) => {
       </div>
       
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-[hsl(var(--gallery-accent))] group-hover:text-[hsl(var(--gallery-accent))] transition-colors duration-300 mb-2">
+        <h3 className="text-lg font-semibold text-white group-hover:text-[hsl(var(--gallery-accent))] transition-colors duration-300 mb-2">
           {artwork.title}
         </h3>
-        {artwork.description && (
+        {artwork.content && (
           <p className="text-sm text-gray-300 leading-relaxed">
-            {truncateText(artwork.description)}
+            {truncateText(artwork.content)}
           </p>
         )}
       </div>
@@ -85,45 +98,25 @@ const ArtGallery = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [selectedArtwork, setSelectedArtwork] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [artworks, setArtworks] = useState([]);
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['artworks', currentPage],
-    queryFn: () => fetchArtworksPage(currentPage),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    placeholderData: (previousData) => previousData
+  const { data: artworks, isLoading } = useQuery({
+    queryKey: ['allArtworks'],
+    queryFn: fetchAllArtworks,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
-
-  useEffect(() => {
-    if (data) {
-      setArtworks((prev) => {
-        const newArtworks = data.data.filter(
-          (newArtwork) => !prev.some((existing) => existing.post_id === newArtwork.post_id)
-        );
-        return [...prev, ...newArtworks];
-      });
-    }
-  }, [data]);
 
   const handleArtworkClick = (id: number) => {
     setSelectedArtwork(id);
     navigate(`/artwork/${id}`);
   };
 
-  const handleNextPage = () => {
-    if (data && currentPage < data.total_pages) {
-      setCurrentPage(prev => prev + 1);
-    }
-  };
-
   // Show placeholder cards while loading initial data
-  if (isLoading && !artworks.length) {
+  if (isLoading) {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, index) => (
+          {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="bg-[#15161a] rounded-lg overflow-hidden shadow-lg border border-gray-700/50">
               <div className="aspect-[4/3] bg-gray-800 animate-pulse flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -139,7 +132,7 @@ const ArtGallery = () => {
     );
   }
 
-  if (!data?.data || data.data.length === 0) {
+  if (!artworks || artworks.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         {t('gallery.noArtworks')}
@@ -159,27 +152,6 @@ const ArtGallery = () => {
           />
         ))}
       </div>
-
-      {data && currentPage < data.total_pages && (
-        <div className="flex justify-center mt-12">
-          {isFetching ? (
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          ) : (
-            <Button
-              onClick={handleNextPage}
-              className="group relative overflow-hidden"
-              size="lg"
-              variant="default"
-            >
-              <span className="relative flex items-center gap-2">
-                {t('gallery.nextPage')}
-                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </span>
-              <div className="absolute inset-0 w-3/12 bg-white/20 skew-x-[45deg] group-hover:w-full transition-all duration-500 -translate-x-full group-hover:translate-x-full" />
-            </Button>
-          )}
-        </div>
-      )}
     </div>
   );
 };

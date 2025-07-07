@@ -15,7 +15,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="px-4 sm:px-6 md:px-8 xl:px-12 py-8">
+      <div className="px-6 sm:px-8 md:px-12 xl:px-16 py-8">
         <div className="flex justify-end items-center gap-2 mb-8">
           <LanguageToggle />
           <ModeToggle />
