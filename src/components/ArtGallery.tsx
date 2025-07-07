@@ -80,6 +80,7 @@ const ArtworkCard = ({ artwork, onClick }) => {
         </div>
       </div>
       
+      {/* Title and description show immediately, not waiting for image */}
       <div className="p-4">
         <h3 className="text-lg font-semibold text-white group-hover:text-[hsl(var(--gallery-accent))] transition-colors duration-300 mb-2">
           {artwork.title}
