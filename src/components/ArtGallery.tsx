@@ -111,7 +111,7 @@ const ArtGallery = () => {
     navigate(`/artwork/${id}`);
   };
 
-  // Show placeholder cards while loading initial data
+  // Show empty grid while loading initial data
   if (isLoading) {
     return (
       <div className="space-y-8">
