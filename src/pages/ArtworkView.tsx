@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Hand, ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -22,9 +23,10 @@ import { LanguageToggle } from '@/components/LanguageToggle';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useStaticTexts } from '@/hooks/useStaticTexts';
+import Hotspot from '@/components/Hotspot';
 
-const ZOOM_LEVEL = 3;
-const MAGNIFIER_SIZE = 160;
+const ZOOM_LEVEL = 2;
+const MAGNIFIER_SIZE = 140;
 const BASE_API_URL = 'https://staging.pedpelop.gr/wp-json/hotspot/v1/get_hotspot';
 
 const fetchArtworkById = async (id: number) => {
@@ -42,8 +44,6 @@ const fetchArtworkById = async (id: number) => {
 
   return response.json();
 };
-
-const stripHtml = (html: string) => html.replace(/<[^>]*>?/gm, "");
 
 const isYouTubeLink = (url: string) => {
   const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -69,6 +69,7 @@ const ArtworkView = () => {
   const [showMagnifier, setShowMagnifier] = useState(false);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   const [isOverHotspot, setIsOverHotspot] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
   const { getText, isLoading } = useStaticTexts();
@@ -89,6 +90,13 @@ const ArtworkView = () => {
     fetchArtwork();
   }, [id]);
 
+  // Auto-select first hotspot when artwork loads on desktop
+  useEffect(() => {
+    if (artwork?.hotspots?.length > 0 && !isMobile && !activeHotspot) {
+      setActiveHotspot(artwork.hotspots[0]._id);
+    }
+  }, [artwork, isMobile, activeHotspot]);
+
   if (!artwork) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -101,6 +109,8 @@ const ArtworkView = () => {
   const detailsHeadingText = getText('detailsHeading') || t('artwork.seeInfo');
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!imageLoaded) return;
+    
     const elem = e.currentTarget;
     const rect = elem.getBoundingClientRect();
     
@@ -228,9 +238,9 @@ const ArtworkView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center gap-2 mb-8">
+    <div className="h-screen bg-background text-foreground overflow-hidden">
+      <div className="container mx-auto px-4 py-4 h-full flex flex-col">
+        <div className="flex justify-between items-center gap-2 mb-4 flex-shrink-0">
           <Button
             variant="ghost"
             className="gap-2"
@@ -245,13 +255,13 @@ const ArtworkView = () => {
           </div>
         </div>
         
-        <div className="flex flex-col lg:flex-row gap-8 mt-8">
-          <div className="flex-1">
-            <div className="relative w-full aspect-[4/3] bg-accent rounded-lg overflow-hidden">
+        <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
+          <div className="flex-1 min-w-0">
+            <div className="relative w-full h-full bg-accent rounded-lg overflow-hidden">
               <div
                 className="relative w-full h-full touch-none"
                 onPointerMove={handlePointerMove}
-                onPointerEnter={() => setShowMagnifier(true)}
+                onPointerEnter={() => imageLoaded && setShowMagnifier(true)}
                 onPointerLeave={() => {
                   setShowMagnifier(false);
                   setIsOverHotspot(false);
@@ -260,14 +270,17 @@ const ArtworkView = () => {
                 <img
                   src={artwork.feature_image}
                   alt={artwork.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   draggable={false}
+                  onLoad={() => setImageLoaded(true)}
                 />
                 
-                {showMagnifier && !isOverHotspot && (
+                {showMagnifier && !isOverHotspot && imageLoaded && (
                   <div
-                    className="absolute w-40 h-40 pointer-events-none border-2 border-white/50 rounded-full overflow-hidden"
+                    className="absolute pointer-events-none border-2 border-white/50 rounded-full overflow-hidden z-10"
                     style={{
+                      width: `${MAGNIFIER_SIZE}px`,
+                      height: `${MAGNIFIER_SIZE}px`,
                       left: `calc(${magnifierPosition.x}% - ${MAGNIFIER_SIZE/2}px)`,
                       top: `calc(${magnifierPosition.y}% - ${MAGNIFIER_SIZE/2}px)`,
                     }}
@@ -284,7 +297,7 @@ const ArtworkView = () => {
                       <img
                         src={artwork.feature_image}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         draggable={false}
                       />
                     </div>
@@ -292,31 +305,16 @@ const ArtworkView = () => {
                 )}
 
                 {artwork.hotspots.map((hotspot) => (
-                  <TooltipProvider key={hotspot._id}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className={cn(
-                            "absolute -ml-4 -mt-4 w-8 h-8 flex items-center justify-center",
-                            "hover:scale-110 transition-transform"
-                          )}
-                          style={{ 
-                            left: `${hotspot.bwdihp_hotspot_left_position.size}%`, 
-                            top: `${hotspot.bwdihp_hotspot_top_position.size}%` 
-                          }}
-                          onClick={() => {
-                            setIsOverHotspot(true);
-                            setActiveHotspot(hotspot._id);
-                          }}
-                        >
-                          <Hand className="w-6 h-6 text-white drop-shadow-lg" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{detailsHeadingText}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Hotspot
+                    key={hotspot._id}
+                    x={hotspot.bwdihp_hotspot_left_position.size}
+                    y={hotspot.bwdihp_hotspot_top_position.size}
+                    description={detailsHeadingText}
+                    onClick={() => {
+                      setIsOverHotspot(true);
+                      setActiveHotspot(hotspot._id);
+                    }}
+                  />
                 ))}
               </div>
             </div>
@@ -334,11 +332,9 @@ const ArtworkView = () => {
               </SheetContent>
             </Sheet>
           ) : (
-            activeHotspot && (
-              <div className="w-[450px] lg:w-[550px] h-[calc(100vh-12rem)] bg-card rounded-lg p-6 overflow-y-auto border">
-                <SidebarContent />
-              </div>
-            )
+            <div className="w-[400px] h-full bg-card rounded-lg p-6 overflow-y-auto border flex-shrink-0">
+              <SidebarContent />
+            </div>
           )}
         </div>
       </div>
