@@ -11,7 +11,7 @@ import 'swiper/css/autoplay';
 
 SwiperCore.use([EffectCoverflow, Autoplay]);
 
-const AUTOPLAY_INTERVAL = 3000; // 3 seconds
+const AUTOPLAY_INTERVAL = Number(import.meta.env.VITE_AUTOPLAY_INTERVAL) || 6000;
 
 const Screensaver = ({ onInteraction }: { onInteraction: () => void }) => {
   const [images, setImages] = useState<string[]>([]);

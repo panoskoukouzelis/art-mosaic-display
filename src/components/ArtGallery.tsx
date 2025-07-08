@@ -1,12 +1,12 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ChevronRight, Eye } from 'lucide-react';
+import { Loader2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 
-const BASE_API_URL = 'https://staging.pedpelop.gr/wp-json/hotspot/v1/get_all_hotspots';
+const BASE_API_URL = import.meta.env.VITE_API_URL;
 
 const fetchAllArtworks = async () => {
   const allArtworks = [];
@@ -14,19 +14,14 @@ const fetchAllArtworks = async () => {
   let totalPages = 1;
 
   while (currentPage <= totalPages) {
-    const response = await fetch(`${BASE_API_URL}/?page=${currentPage}`, {
-      method: 'GET',
+    const response = await axios.get(`${BASE_API_URL}/?page=${currentPage}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP Error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = response.data;
     allArtworks.push(...data.data);
     totalPages = data.total_pages;
     currentPage++;
@@ -41,7 +36,6 @@ const ArtworkCard = ({ artwork, onClick }) => {
 
   const truncateText = (text, maxLength = 120) => {
     if (!text) return '';
-    // Remove HTML tags for cleaner display
     const cleanText = text.replace(/<[^>]*>/g, '');
     if (cleanText.length <= maxLength) return cleanText;
     return cleanText.substring(0, maxLength) + '...';
@@ -52,6 +46,7 @@ const ArtworkCard = ({ artwork, onClick }) => {
       className="group relative bg-[#15161a] dark:bg-[#15161a] rounded-lg overflow-hidden shadow-lg border border-gray-700/50 cursor-pointer transition-all duration-300 hover:shadow-xl"
       onClick={onClick}
     >
+      
       <div className="relative aspect-[4/3] overflow-hidden">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
@@ -67,8 +62,6 @@ const ArtworkCard = ({ artwork, onClick }) => {
           onLoad={() => setImageLoaded(true)}
           loading="lazy"
         />
-        
-        {/* View Details Button */}
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <Button
             size="sm"
@@ -80,7 +73,6 @@ const ArtworkCard = ({ artwork, onClick }) => {
         </div>
       </div>
       
-      {/* Title and description show immediately, not waiting for image */}
       <div className="p-4">
         <h3 className="text-lg font-semibold text-white group-hover:text-[hsl(var(--gallery-accent))] transition-colors duration-300 mb-2">
           {artwork.title}
@@ -103,8 +95,8 @@ const ArtGallery = () => {
   const { data: artworks, isLoading } = useQuery({
     queryKey: ['allArtworks'],
     queryFn: fetchAllArtworks,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 
   const handleArtworkClick = (id: number) => {
@@ -112,7 +104,6 @@ const ArtGallery = () => {
     navigate(`/artwork/${id}`);
   };
 
-  // Show loading skeleton only while fetching API data
   if (isLoading) {
     return (
       <div className="space-y-8">
